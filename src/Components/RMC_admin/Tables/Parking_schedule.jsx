@@ -74,7 +74,7 @@ const thead = [
 
   /*   { name: "Schedule Type" },
    */ { name: "Actions" },
-  { name: "Extended Hours" },
+  // { name: "Extended Hours" },
 ];
 
 const styles = {
@@ -108,7 +108,7 @@ export default function ParkingSchedule() {
   const [loading, set_loading] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const[extraHour, setExtraHour] = useState('')
+  const [extraHour, setExtraHour] = useState('')
 
 
 
@@ -238,49 +238,49 @@ export default function ParkingSchedule() {
     console.log(response);
   };
 
-    const [initialValues, setInitialValues] = useState({
-      address: "",
-      from_time: "",
-      to_time: "",
-      from_date: "",
-      to_date: "",
-      first_name: "",
-      last_name: "",
-      incharge_id:""
-    });
-  
-    const [originalToTime, setOriginalToTime] = useState("");
+  const [initialValues, setInitialValues] = useState({
+    address: "",
+    from_time: "",
+    to_time: "",
+    from_date: "",
+    to_date: "",
+    first_name: "",
+    last_name: "",
+    incharge_id: ""
+  });
+
+  const [originalToTime, setOriginalToTime] = useState("");
 
 
-    const edithandleClickOpen = (id) => {
-      const filteredData = data.find((item) => item.id === id);
-      if (filteredData) {
-        const fromDateTime = filteredData.from_date.split("T");
-        const toDateTime = filteredData.to_date.split("T");
-        setInitialValues({
-          address: filteredData.address,
-          from_time: filteredData.from_time,
-          to_time: filteredData.to_time,
-          from_date: fromDateTime[0],
-          to_date: toDateTime[0],
-          first_name: filteredData.first_name,
-          last_name: filteredData.last_name,
-          incharge_id: filteredData.incharge_id,
-        });
-        setSelectedItem(id);
-        setIsPopupVisible(true);
-        setOriginalToTime(filteredData.to_time);
-      }
-    };
-  
-    const calculateExtendedHours = (originalTime, updatedTime) => {
-      const originalDate = new Date(`1970-01-01T${originalTime}`);
-      const updatedDate = new Date(`1970-01-01T${updatedTime}`);
-      const diffMs = updatedDate - originalDate;
-      const diffHours = Math.floor(diffMs / 1000 / 60 / 60);
-      const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      return { hours: diffHours, minutes: diffMinutes };
-    };
+  const edithandleClickOpen = (id) => {
+    const filteredData = data.find((item) => item.id === id);
+    if (filteredData) {
+      const fromDateTime = filteredData.from_date.split("T");
+      const toDateTime = filteredData.to_date.split("T");
+      setInitialValues({
+        address: filteredData.address,
+        from_time: filteredData.from_time,
+        to_time: filteredData.to_time,
+        from_date: fromDateTime[0],
+        to_date: toDateTime[0],
+        first_name: filteredData.first_name,
+        last_name: filteredData.last_name,
+        incharge_id: filteredData.incharge_id,
+      });
+      setSelectedItem(id);
+      setIsPopupVisible(true);
+      setOriginalToTime(filteredData.to_time);
+    }
+  };
+
+  const calculateExtendedHours = (originalTime, updatedTime) => {
+    const originalDate = new Date(`1970-01-01T${originalTime}`);
+    const updatedDate = new Date(`1970-01-01T${updatedTime}`);
+    const diffMs = updatedDate - originalDate;
+    const diffHours = Math.floor(diffMs / 1000 / 60 / 60);
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    return { hours: diffHours, minutes: diffMinutes };
+  };
 
   const handleClosePopup = () => {
     setIsPopupVisible(false);
@@ -289,17 +289,50 @@ export default function ParkingSchedule() {
   const dataUpdate = async (values) => {
     console.log("values", values)
 
-      let extendedHours = { hours: 0, minutes: 0 };
-      if (values.to_time !== originalToTime) {
-        extendedHours = calculateExtendedHours(
-          initialValues.to_time,
-          values.to_time
-        );
-      }
+    let extendedHours = { hours: 0, minutes: 0 };
+    if (values.to_time !== originalToTime) {
+      extendedHours = calculateExtendedHours(
+        initialValues.to_time,
+        values.to_time
+      );
+    }
 
-    console.log("Updated values", values);
+    console.log("Updated values", {
+      ...values,
+      id: selectedItem
+    });
     console.log("Extended hours", extendedHours);
     setExtraHour(extendedHours);
+
+    const response = axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/update-schedule`,
+        {
+          ...values,
+          extended_hours: extendedHours,
+          id: selectedItem
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((e) => {
+        console.log(e.data);
+        // if (e.data?.data?.deleted == delete_id) {
+        //   set_deleteLoading(false);
+        //   dataFetch(page, rowsPerPage);
+        //   errorhandleClose();
+        // } else {
+        //   toast.error("Something went wrong");
+        // }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+
   };
 
   console.log("extraHour", extraHour);
@@ -631,6 +664,25 @@ export default function ParkingSchedule() {
                                             className="border p-2"
                                           />
                                         </div>
+
+                                        {/* <div>
+                                          <label htmlFor="extended_hours">
+                                            Extended Hours
+                                          </label>
+                                          <br></br>
+                                          <input
+                                            disabled
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            value={`${Number(extraHour?.hours)}:${Number(extraHour?.minutes)}`}
+                                            label="Extended Hours"
+                                            name="extended_hours"
+                                            type="text"
+                                            placeholder={"Extended Hours"}
+                                            maxLength={10}
+                                            className="border p-2"
+                                          />
+                                        </div> */}
                                       </div>
 
                                       <div className="flex items-center justify-end mt-5 gap-5">
