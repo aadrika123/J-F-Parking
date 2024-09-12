@@ -109,6 +109,7 @@ export default function ParkingSchedule() {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [extraHour, setExtraHour] = useState('')
+  const [refresh, setRefresh] = useState(false);
 
 
 
@@ -194,7 +195,7 @@ export default function ParkingSchedule() {
 
   useEffect(() => {
     dataFetch(page, rowsPerPage);
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, refresh]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -320,6 +321,8 @@ export default function ParkingSchedule() {
       )
       .then((e) => {
         console.log(e.data);
+        setIsPopupVisible(false)
+        setRefresh((prev) => !prev)
         // if (e.data?.data?.deleted == delete_id) {
         //   set_deleteLoading(false);
         //   dataFetch(page, rowsPerPage);
