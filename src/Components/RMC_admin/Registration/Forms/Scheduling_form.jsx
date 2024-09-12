@@ -11,6 +11,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { Autocomplete, TextField } from "@mui/material";
 
 const FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
@@ -48,11 +49,11 @@ export default function Scheduling_form() {
   const [zip_code, set_zip_code] = useState("");
   const [incharge, set_incharge] = useState([]);
   const [selected_area, set_selected_area] = useState({});
-  const [selected_incharge, set_selected_incharge] = useState({});
+  const [selected_incharge, set_selected_incharge] = useState([]);
   const [UpdateData, set_UpdateData] = useState({});
   const navigate = useNavigate();
 
-  //console.log(incharge);
+  console.log(incharge, 'incharge');
   console.log(parkingarea);
   console.log("Selected Incharge >> ", selected_incharge);
   const [erroropen, set_erroropen] = useState(false);
@@ -65,7 +66,7 @@ export default function Scheduling_form() {
     set_erroropen(false);
   };
 
-  const handleUpdate = (e) => {};
+  const handleUpdate = (e) => { };
   function generateTimeOptions(intervalMinutes) {
     const timeOptions = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -119,7 +120,7 @@ export default function Scheduling_form() {
   }, []);
 
   const onSubmit = async (values) => {
-    console.log(values);
+    console.log(values, 'incharge');
 
     if (!selected_incharge && !selected_area && !zip_code) {
       return toast.error("Please select location and incharge");
@@ -128,7 +129,7 @@ export default function Scheduling_form() {
       const formdata = {
         from_date: values.from_date,
         from_time: values.from_time,
-        incharge_id: selected_incharge.cunique_id,
+        incharge_id: selected_incharge,
         location_id: selected_area.id,
         to_date: values.to_date,
         to_time: values.to_time,
@@ -275,7 +276,7 @@ export default function Scheduling_form() {
                     as="input"
                     type="date"
                     id="from_date"
-                    min={new Date().toISOString().split("T")[0]} 
+                    min={new Date().toISOString().split("T")[0]}
                     name="from_date"
                     className="border border-gray-300 rounded-md px-3 py-4 mt-1"
                     style={{ boxShadow: "0 1px 4px #fff" }}
@@ -302,7 +303,7 @@ export default function Scheduling_form() {
                     type="date"
                     id="to_date"
                     name="to_date"
-                    min={new Date().toISOString().split("T")[0]} 
+                    min={new Date().toISOString().split("T")[0]}
                     className="border border-gray-300 rounded-md px-3 py-4 mt-1"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     onFocus={(e) =>
@@ -319,7 +320,41 @@ export default function Scheduling_form() {
               </div>
 
               <div className="flex flex-1 flex-col">
+
                 <div className="flex flex-1 flex-col mt-4">
+                  {/* <label htmlFor="incharge_id">
+                    In-Charge Id
+                    <span className="text-red-500">*</span>
+                  </label> */}
+                  <Autocomplete
+                    sx={{
+                      mt: 3.5
+                    }}
+                    multiple
+                    id="tags-outlined"
+                    options={incharge}
+                    getOptionLabel={(option) => option.first_name}
+                    // filterSelectedOptions
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder="In-Charge Id"
+                      />
+                    )}
+                    onChange={(e, value) => {
+                      const formattedInchargeId = value.map(item => item?.cunique_id)
+                      console.log(formattedInchargeId, 'incharge')
+                      set_selected_incharge(formattedInchargeId)
+                    }}
+                  />
+
+                  <ErrorMessage
+                    name="incharge_id"
+                    component="div"
+                    className="text-red-500 ml-4"
+                  />
+                </div>
+                {/* <div className="flex flex-1 flex-col mt-4">
                   <label htmlFor="incharge_id">
                     In-Charge Id
                     <span className="text-red-500">*</span>
@@ -357,7 +392,7 @@ export default function Scheduling_form() {
                     component="div"
                     className="text-red-500 ml-4"
                   />
-                </div>
+                </div> */}
 
 
                 <div className="flex flex-1 flex-col mt-4">

@@ -421,8 +421,8 @@ export default function ParkingSchedule() {
                   <TableRow key={row.id}>
                     <TableCell>{row.address}</TableCell>
                     <TableCell>{row.id}</TableCell>
-                    <TableCell>{row.first_name}</TableCell>
-                    <TableCell>{row.incharge_id}</TableCell>
+                    <TableCell>{row.first_name.join(', ')}</TableCell>
+                    <TableCell>{row.incharge_id.join(', ')}</TableCell>
                     <TableCell>{formatDate(row.from_date)}</TableCell>
                     <TableCell>{formatDate(row.to_date)}</TableCell>
                     <TableCell>{formatTime(row.from_time)}</TableCell>
