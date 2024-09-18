@@ -400,7 +400,7 @@ export default function RMC_Dashboard() {
                         <span className="font-bold text-green-500">{sum}</span>
                       </p>
                       <p className="text-sm ">
-                        Total No. of Current<br></br> Collection
+                        Total amount of Current<br></br> Collection
                       </p>
                     </div>
                     <div></div>

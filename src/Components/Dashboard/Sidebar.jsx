@@ -9,6 +9,7 @@ export default function Sidebar() {
   const path = location.pathname;
 
   const userType = localStorage.getItem('userType')
+  const name = localStorage.getItem('name')
 
   return (
     <div className="flex w-full px-4 flex-col   rounded-r-md justify-center items-start transition-all duration-300 ease-in-out ">
@@ -19,7 +20,7 @@ export default function Sidebar() {
               <Avatar src={sample_profile} sx={{ width: 100, height: 100 }} />
             </div>
             <div className="flex flex-1 text-2xl text-[#555555] font-bold">
-              RMC Admin
+              {name || ''}
             </div>
           </div>
 
