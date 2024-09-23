@@ -333,7 +333,8 @@ export default function Scheduling_form() {
                     multiple
                     id="tags-outlined"
                     options={incharge}
-                    getOptionLabel={(option) => option.first_name}
+                    // getOptionLabel={(option) => option.first_name}
+                    getOptionLabel={(option) => `${option.first_name} (${option.cunique_id})`}
                     // filterSelectedOptions
                     renderInput={(params) => (
                       <TextField
