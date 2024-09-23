@@ -63,10 +63,10 @@ const AppRoutes = ({ access_token, userType }) => {
             path="/accountant"
             element={<PrivateRoute Element={AccountantViewPage} />}
           /> */}
-          <Route
+          {/* <Route
             path="/account-view"
             element={<PrivateRoute Element={AccountView} />}
-          />
+          /> */}
         </>
       )}
       {access_token && userType === "Employee" && (
@@ -94,6 +94,10 @@ const AppRoutes = ({ access_token, userType }) => {
           <Route
             path="/accountant"
             element={<PrivateRoute Element={AccountantViewPage} />}
+          />
+          <Route
+            path="/account-view"
+            element={<PrivateRoute Element={AccountView} />}
           />
         </>
       )}

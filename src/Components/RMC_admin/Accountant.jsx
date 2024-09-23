@@ -1,5 +1,5 @@
 // AccountantViewPage.jsx
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import TitleBar from "../Header/TitleBar";
 import { FaChartPie } from "react-icons/fa";
 import { contextVar } from "../context/contextVar";
@@ -7,10 +7,12 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 // import list from "@/Components/assets/list.svg"; // Adjust path if necessary
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import allData from "./dataService";
 import { CSVLink } from "react-csv"; // For CSV export
 import { usePDF } from "react-to-pdf"; // For PDF export
+import axios from "axios";
+
 const AccountantViewPage = () => {
   const { titleBarVisibility } = useContext(contextVar);
   const [activeTab, setActiveTab] = useState("Submited Cash");
@@ -21,7 +23,9 @@ const AccountantViewPage = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10 items per page
-  const [conductorId, setConductorId] = useState("");
+  const [inchargeId, setInchargeId] = useState("");
+  const [summaryData, setSummaryData] = useState([]);
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
 
@@ -31,7 +35,7 @@ const AccountantViewPage = () => {
   }, [activeTab]);
 
   const boqListingFunc = () => {
-    if (!startDate || !endDate || !conductorId) return;
+    if (!startDate || !endDate || !inchargeId) return;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -43,7 +47,7 @@ const AccountantViewPage = () => {
         return (
           itemDate >= start &&
           itemDate <= end &&
-          data.id.toString().includes(conductorId)
+          data.id.toString().includes(inchargeId)
         );
       }) || [];
 
@@ -80,7 +84,7 @@ const AccountantViewPage = () => {
     { label: "Time", key: "time" },
     { label: "Amount", key: "amount" },
     { label: "Payee", key: "payee" },
-    { label: "Conductor Id", key: "id" },
+    { label: "Incharge Id", key: "id" },
 
     { label: "Description", key: "description" },
 
@@ -98,12 +102,37 @@ const AccountantViewPage = () => {
 
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
+  const getSummaryList = async () => {
+    try {
+      axios
+        .get(`${process.env.REACT_APP_BASE_URL}/summary`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          console.log(res?.data?.data?.data, 'summaryList');
+          setSummaryData(res?.data?.data?.data)
+          setTotalResults(res?.data?.data?.totalPages)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getSummaryList()
+  }, [])
+
   return (
-    <div>
+    <div className="w-full">
       <div className="p-7">
         <TitleBar
           titleBarVisibility={titleBarVisibility}
-          titleText={"Conductor Details"}
+          titleText={"Incharge Details"}
         />
       </div>
 
@@ -112,11 +141,10 @@ const AccountantViewPage = () => {
           {["Submited Cash", "Disputed List", "Suspense Account"].map((tab) => (
             <button
               key={tab}
-              className={`py-2 px-4 ${
-                activeTab === tab
-                  ? "border-b-2 border-blue-500 text-white bg-[#4338CA]"
-                  : "text-gray-500"
-              } focus:outline-none flex border border-[#4338ca] rounded`}
+              className={`py-2 px-4 ${activeTab === tab
+                ? "border-b-2 border-blue-500 text-white bg-[#4338CA]"
+                : "text-gray-500"
+                } focus:outline-none flex border border-[#4338ca] rounded`}
               onClick={() => {
                 setActiveTab(tab);
                 setFilteredData(allData[tab]);
@@ -175,8 +203,8 @@ const AccountantViewPage = () => {
               type="text"
               placeholder="Enter the Conductor Id"
               className="inline-block w-full relative border-2 p-2 rounded-md"
-              value={conductorId}
-              onChange={(e) => setConductorId(e.target.value)}
+              value={inchargeId}
+              onChange={(e) => setInchargeId(e.target.value)}
             />
           </div>
           <div className="pt-9">
@@ -209,9 +237,8 @@ const AccountantViewPage = () => {
               </button>
 
               <div
-                className={`flex gap-2 transition-opacity duration-300 ${
-                  isHovered ? "opacity-100 visible" : "opacity-0 invisible"
-                }`}
+                className={`flex gap-2 transition-opacity duration-300 ${isHovered ? "opacity-100 visible" : "opacity-0 invisible"
+                  }`}
               >
                 <button
                   onClick={() => toPDF()} // Trigger PDF download
@@ -246,7 +273,7 @@ const AccountantViewPage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto w-full bg-white rounded border mt-6 shadow-xl">
+      <div className="mx-auto w-full bg-white rounded border mt-6 shadow-xl">
         <div className="flex items-center mr-3 m-4 pb-1 w-20 justify-center border-b border-black">
           {/* <img src={list} alt="List" className="" /> */}
           <span className="ml-2 text-gray-500">List</span>
@@ -291,19 +318,19 @@ const AccountantViewPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map((data, index) => (
+                {summaryData.map((data, index) => (
                   <tr
                     key={index}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                   >
                     <td className="px-6 py-4">{index + 1}</td>
-                    <td className="px-6 py-4">{data.date}</td>
-                    <td className="px-6 py-4">{data.time}</td>
-                    <td className="px-6 py-4">{data.amount}</td>
-                    <td className="px-6 py-4">{data.payee}</td>
-                    <td className="px-6 py-4">{data.id}</td>
+                    <td className="px-6 py-4">{new Date(data?.date).toISOString().split('T')[0]}</td>
+                    <td className="px-6 py-4">{new Date(data?.date).toISOString().split('T')[1].slice(0, 5)}</td>
+                    <td className="px-6 py-4">₹{data?.total_amount}</td>
+                    <td className="px-6 py-4">{`${data?.incharge?.first_name} ${data?.incharge?.last_name}`}</td>
+                    <td className="px-6 py-4">{data?.incharge?.cunique_id}</td>
 
-                    <td className="px-6 py-4">{data.description}</td>
+                    <td className="px-6 py-4">{data?.description}</td>
                     <td className="px-6 py-4">
                       <button
                         className="bg-[#4338CA] text-white px-2 py-1 rounded hover:bg-[#373081]"
