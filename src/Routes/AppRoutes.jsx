@@ -96,7 +96,7 @@ const AppRoutes = ({ access_token, userType }) => {
             element={<PrivateRoute Element={AccountantViewPage} />}
           />
           <Route
-            path="/account-view"
+            path="/account-view/:id"
             element={<PrivateRoute Element={AccountView} />}
           />
         </>

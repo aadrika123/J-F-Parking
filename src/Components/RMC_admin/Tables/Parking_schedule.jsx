@@ -175,8 +175,13 @@ export default function ParkingSchedule() {
 
       if (Array.isArray(response.data.data.data)) {
         set_loading(false)
-        setData(response.data.data.data); // Ensure the response contains a 'data' field with an array of items
-        setFilteredData(response.data.data.data);
+        // console.log(response.data.data.data, 'schdata')
+        const data = response.data.data.data
+        data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        setData(data)
+        setFilteredData(data)
+        // setData(response.data.data.data); // Ensure the response contains a 'data' field with an array of items
+        // setFilteredData(response.data.data.data);
 
       } else {
         console.error(
@@ -421,8 +426,8 @@ export default function ParkingSchedule() {
                   <TableRow key={row.id}>
                     <TableCell>{row.address}</TableCell>
                     <TableCell>{row.id}</TableCell>
-                    <TableCell>{Array.isArray(row.first_name)?row.first_name.join(', '):''}</TableCell>
-                    <TableCell>{Array.isArray(row.incharge_id)?row.incharge_id.join(', '):''}</TableCell>
+                    <TableCell>{Array.isArray(row.first_name) ? row.first_name.join(', ') : ''}</TableCell>
+                    <TableCell>{Array.isArray(row.incharge_id) ? row.incharge_id.join(', ') : ''}</TableCell>
                     <TableCell>{formatDate(row.from_date)}</TableCell>
                     <TableCell>{formatDate(row.to_date)}</TableCell>
                     <TableCell>{formatTime(row.from_time)}</TableCell>

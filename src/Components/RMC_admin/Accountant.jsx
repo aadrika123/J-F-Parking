@@ -25,6 +25,7 @@ const AccountantViewPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10 items per page
   const [inchargeId, setInchargeId] = useState("");
   const [summaryData, setSummaryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
@@ -56,8 +57,8 @@ const AccountantViewPage = () => {
     setCurrentPage(1); // Reset to first page after filtering
   };
 
-  const handleViewClick = () => {
-    navigate("/account-view");
+  const handleViewClick = (transaction_id) => {
+    navigate(`/account-view/${transaction_id}`);
   };
 
   // Pagination logic
@@ -104,6 +105,7 @@ const AccountantViewPage = () => {
 
   const getSummaryList = async () => {
     try {
+      setIsLoading(true)
       axios
         .get(`${process.env.REACT_APP_BASE_URL}/summary`, {
           headers: {
@@ -120,6 +122,8 @@ const AccountantViewPage = () => {
         });
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -273,7 +277,7 @@ const AccountantViewPage = () => {
         </div>
       </div>
 
-      <div className="mx-auto w-full bg-white rounded border mt-6 shadow-xl">
+      <div className="mx-auto w-[98.3%] bg-white rounded border mt-6 shadow-xl">
         <div className="flex items-center mr-3 m-4 pb-1 w-20 justify-center border-b border-black">
           {/* <img src={list} alt="List" className="" /> */}
           <span className="ml-2 text-gray-500">List</span>
@@ -318,7 +322,8 @@ const AccountantViewPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {summaryData.map((data, index) => (
+                {isLoading && <div className="text-9xl">Loading...</div>}
+                {!isLoading && summaryData.map((data, index) => (
                   <tr
                     key={index}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
@@ -334,7 +339,7 @@ const AccountantViewPage = () => {
                     <td className="px-6 py-4">
                       <button
                         className="bg-[#4338CA] text-white px-2 py-1 rounded hover:bg-[#373081]"
-                        onClick={handleViewClick}
+                        onClick={() => { handleViewClick(data?.transaction_id) }}
                       >
                         View
                       </button>
