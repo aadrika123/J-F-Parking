@@ -25,7 +25,7 @@ const AccountantViewPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10 items per page
   const [inchargeId, setInchargeId] = useState("");
   const [summaryData, setSummaryData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
@@ -104,8 +104,8 @@ const AccountantViewPage = () => {
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
   const getSummaryList = async () => {
+    setIsLoading(true)
     try {
-      setIsLoading(true)
       axios
         .get(`${process.env.REACT_APP_BASE_URL}/summary`, {
           headers: {
@@ -142,7 +142,7 @@ const AccountantViewPage = () => {
 
       <div className="flex justify-between">
         <div className="flex gap-4 px-3">
-          {["Submited Cash", "Disputed List", "Suspense Account"].map((tab) => (
+          {["Submited Cash"].map((tab) => (
             <button
               key={tab}
               className={`py-2 px-4 ${activeTab === tab
@@ -322,7 +322,7 @@ const AccountantViewPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {isLoading && <div className="text-9xl">Loading...</div>}
+                {isLoading && <div className="text-4xl">Loading...</div>}
                 {!isLoading && summaryData.map((data, index) => (
                   <tr
                     key={index}
@@ -346,6 +346,7 @@ const AccountantViewPage = () => {
                     </td>
                   </tr>
                 ))}
+                {(!isLoading && summaryData?.length === 0) && <div className="p-4 w-full text-center text-4xl">No Data</div>}
               </tbody>
             </table>
 
