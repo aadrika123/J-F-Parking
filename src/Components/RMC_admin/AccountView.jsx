@@ -235,6 +235,9 @@ const AccountView = () => {
                 <th scope="col" class="px-6 py-3 ">
                   Payment Mode
                 </th>
+                <th scope="col" class="px-6 py-3 ">
+                  Amount
+                </th>
                 <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">
                   Incharge ID
                 </th>
@@ -259,6 +262,7 @@ const AccountView = () => {
                     {item?.transaction_id}
                   </th>
                   <td class="px-6 py-4">{item?.transaction_type}</td>
+                  <td class="px-6 py-4">{item?.total_amount}</td>
                   <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{item?.incharge_id}</td>
                   <td class="px-6 py-4">{item?.incharge?.first_name} {item?.incharge?.last_name}</td>
                   <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{`${data?.from_time} - ${data?.to_time}`}</td>
