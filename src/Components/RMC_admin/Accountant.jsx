@@ -12,6 +12,8 @@ import allData from "./dataService";
 import { CSVLink } from "react-csv"; // For CSV export
 import { usePDF } from "react-to-pdf"; // For PDF export
 import axios from "axios";
+import autoTable from "jspdf-autotable";
+import { jsPDF } from "jspdf";
 
 const AccountantViewPage = () => {
   const { titleBarVisibility } = useContext(contextVar);
@@ -134,6 +136,60 @@ const AccountantViewPage = () => {
     getSummaryList()
   }, [])
 
+
+  const getScheduleList = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/get-schedules`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      return res?.data?.data?.data
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  const handleDownloadSchedule = async () => {
+    const doc = new jsPDF();
+    const columns = [
+      { header: "ID" },
+      { header: "Incharge ID" },
+      { header: "From" },
+      { header: "To" },
+      { header: "Time" },
+      { header: "Location" }
+    ];
+    const scheduledata = await getScheduleList()
+    const data = scheduledata.map((item, index) => (
+      [
+        index + 1,
+        item?.incharge_id.join(', '),
+        item?.from_date.split('T')[0],
+        item?.to_date.split('T')[0],
+        `${item?.from_time} - ${item?.to_time} `,
+        `${item?.location?.address} - ${item?.location?.station} (zip/Code: ${item?.location?.zip_code})`
+      ]
+    ))
+
+    autoTable(doc, {
+      head: [columns.map((column) => column.header)],
+      body: data,
+    });
+
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+
+    const formattedDate = `${day}${month}${year}`
+    const fileName = `schedule_${formattedDate}.pdf`
+
+    doc.save(fileName);
+  }
+
   return (
     <div className="w-full">
       <div className="p-7">
@@ -166,7 +222,7 @@ const AccountantViewPage = () => {
         </div>
 
         <div className="flex justify-end mr-4">
-          <button className="text-red bg-[#4338CA] hover:before:bg-redborder-red-500 relative overflow-hidden border px-7 py-2 text-white shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#4338CA] before:transition-all before:duration-500 hover:text-white hover:before:left-0 hover:before:w-full rounded-md">
+          <button onClick={handleDownloadSchedule} className="text-red bg-[#4338CA] hover:before:bg-redborder-red-500 relative overflow-hidden border px-7 py-2 text-white shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#4338CA] before:transition-all before:duration-500 hover:text-white hover:before:left-0 hover:before:w-full rounded-md">
             <span className="relative z-10 flex">
               Download schedule{" "}
               <FaArrowRightLong color="white" size={15} className="mt-1 ml-3" />
