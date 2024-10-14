@@ -7,6 +7,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { TurnLeftOutlined } from "@mui/icons-material";
+import { Button } from "@mui/material";
 
 export default function RMC_Dashboard() {
   const navigate = useNavigate();
@@ -446,6 +447,14 @@ export default function RMC_Dashboard() {
           </div>
 
           <div className="flex flex-col overflow-y-scroll">
+            <div className="flex flex-row justify-end item-center mx-10 ">
+              <Button
+                variant="contained"
+                onClick={()=>{navigate('/collection-report')}}
+              >
+                Collection Report
+              </Button>
+            </div>
             <div className="flex flex-1 justify-center items-center">
               {/* col-1 */}
 
