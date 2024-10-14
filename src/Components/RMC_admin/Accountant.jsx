@@ -35,28 +35,6 @@ const AccountantViewPage = () => {
     setTotalResults(allData[activeTab].length);
   }, [activeTab]);
 
-  const boqListingFunc = () => {
-    if (!startDate || !endDate || !inchargeId) return;
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    // Filter data based on date range
-    const filtered =
-      allData[activeTab]?.filter((data) => {
-        const itemDate = new Date(data.date);
-        return (
-          itemDate >= start &&
-          itemDate <= end &&
-          data.id.toString().includes(inchargeId)
-        );
-      }) || [];
-
-    setFilteredData(filtered);
-    setTotalResults(filtered.length);
-    setCurrentPage(1); // Reset to first page after filtering
-  };
-
   const handleViewClick = (transaction_id) => {
     navigate(`/account-view/${transaction_id}`);
   };
@@ -103,11 +81,26 @@ const AccountantViewPage = () => {
 
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
-  const getSummaryList = async () => {
+  const getSummaryList = async (start, end, incharge) => {
     setIsLoading(true)
+
+    let queryParams = ''
+
+    if (start && end) {
+      queryParams = `?start=${start}&end=${end}`
+    }
+
+    if (incharge) {
+      if (queryParams) {
+        queryParams += `&incharge=${incharge}`
+      } else {
+        queryParams += `?incharge=${incharge}`
+      }
+    }
+
     try {
       axios
-        .get(`${process.env.REACT_APP_BASE_URL}/summary`, {
+        .get(`${process.env.REACT_APP_BASE_URL}/summary${queryParams}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -126,6 +119,16 @@ const AccountantViewPage = () => {
       setIsLoading(false)
     }
   }
+
+  const handleDateFilter = () => {
+
+    const start = new Date(startDate).toISOString().split('T')[0];
+    const end = new Date(endDate).toISOString().split('T')[0];
+
+    getSummaryList(start, end, inchargeId)
+
+    setCurrentPage(1); // Reset to first page after filtering
+  };
 
   useEffect(() => {
     getSummaryList()
@@ -205,7 +208,7 @@ const AccountantViewPage = () => {
           <div className="pt-9">
             <input
               type="text"
-              placeholder="Enter the Conductor Id"
+              placeholder="Enter the Incharge Id"
               className="inline-block w-full relative border-2 p-2 rounded-md"
               value={inchargeId}
               onChange={(e) => setInchargeId(e.target.value)}
@@ -214,7 +217,7 @@ const AccountantViewPage = () => {
           <div className="pt-9">
             <button
               className="bg-[#4338CA] hover:bg-[#5f54df] px-7 ml-4 py-2 text-white font-semibold rounded shadow-lg"
-              onClick={boqListingFunc}
+              onClick={handleDateFilter}
             >
               Search
             </button>
