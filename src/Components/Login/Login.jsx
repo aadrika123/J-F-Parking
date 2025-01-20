@@ -5,6 +5,8 @@ import Cookies from "js-cookie";
 import { Container, Box, Button } from "@mui/material";
 import PasswordInput from "./PasswordInput"; // Import the PasswordInput component
 import createApiInstance from "../../AxiosInstance";
+import axios from "axios";
+import ApiHeader from "../api/ApiHeader";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState();
@@ -34,12 +36,15 @@ const Login = () => {
         email: values.user_id,
         password: values.password,
         type: window.ReactNativeWebView ? "mobile" : null,
+        moduleId: 19,
         //type: "mobile",
       });
 
-      console.log(res);
+      console.log(res,"resss 1")
+      // console.log(res);
 
-      if (res) {
+        fetchMenuList();
+        console.log("api running")
         const { token, userDetails } = res.data.data;
         Cookies.set("accesstoken", token, { expires: 1 });
 
@@ -63,12 +68,51 @@ const Login = () => {
         } else {
           window.location.replace("/");
         }
-      }
+
     } catch (error) {
       setErrorMsg("Something Went Wrong!!");
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMenuList = async () => {
+    let requestBody = {
+      moduleId: 19,
+    };
+
+    try {
+      // Make API request
+      const res = await axios.post(
+        "https://aadrikainfomedia.com/auth/api/menu/by-module",
+        requestBody,
+        ApiHeader()
+      );
+
+      // console.log(data?.data,"1234");
+
+      let data = res?.data;
+
+      console.log(data,"4444")
+
+      localStorage.setItem("menuList", res?.data?.data?.permission);
+
+      if (data?.data?.userDetails && data?.data?.permission) {
+        let newdata = JSON.stringify(data?.data?.userDetails);
+        if (newdata != undefined) {
+          localStorage.setItem("userDetail", newdata);
+        }
+
+        let newPermission = JSON.stringify(data?.data?.permission);
+        if (newPermission != undefined || newPermission == "") {
+          localStorage.setItem("userPermission", newPermission);
+        }
+      } else {
+        console.error("Missing required data in the API response.");
+      }
+    } catch (error) {
+      console.error("Error fetching menu list", error);
     }
   };
 

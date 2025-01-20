@@ -16,13 +16,18 @@ import Incharge_Dashboard from "../Components/Ticket_checker/Incharge_Dashboard"
 import Ticket_check from "../Components/Ticket_checker/Ticket_check";
 import Report_generation_checker from "../Components/Ticket_checker/Report/Report_generation_checker";
 import Report_page from "../Components/Ticket_checker/Report/Report_page";
+import ServiceRestrictionLayout from "../Components/pages/error/ServiceRestrictionLayout";
 
 const AppRoutes = ({ access_token, userType }) => {
-  console.log("AppRoutes with token >>> ", access_token, userType);
+  // console.log("AppRoutes with token >>> ", access_token, userType);
 
   return (
     <Routes>
       <Route path="/" element={<Login_main />} />
+      <Route
+        path="/service-restriction"
+        element={<PrivateRoute Element={ServiceRestrictionLayout} />}
+      />
       {access_token && userType === "Admin" && (
         <>
           <Route

@@ -12,8 +12,12 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
+import useModulePermission from "./Components/Hooks/useModulePermission";
+import { UseServiceCheck } from "./Components/Hooks/UseServiceCheck";
 
 function App() {
+  useModulePermission();
+  UseServiceCheck();
   const [accessToken, setAccessToken] = useState("");
   const [userType, setUserType] = useState("");
   const [loading, setLoading] = useState(true);
@@ -53,11 +57,14 @@ function App() {
     );
   }
 
+  // console.log(accessToken,"accessToken")
+  // console.log(userType,"userType")
+
   return (
     <>
-      <Router basename="/parking">
+      {/* <Router basename="/parking"> */}
         <AppRoutes access_token={accessToken} userType={userType} />
-      </Router>
+      {/* </Router> */}
       <Dialog
         open={open}
         onClose={handleClose}
