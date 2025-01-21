@@ -26,7 +26,6 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userType = localStorage.getItem("userType");
-    console.log(token);
 
     if (token && token !== "undefined") {
       setAccessToken(token);

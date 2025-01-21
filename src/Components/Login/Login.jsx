@@ -7,6 +7,7 @@ import PasswordInput from "./PasswordInput"; // Import the PasswordInput compone
 import createApiInstance from "../../AxiosInstance";
 import axios from "axios";
 import ApiHeader from "../api/ApiHeader";
+import ProjectApiList from "../api/ProjectApiList";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState();
@@ -14,6 +15,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const Authapi = createApiInstance("auth");
+
+  const { getMenuByModule } = ProjectApiList();
 
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -40,11 +43,11 @@ const Login = () => {
         //type: "mobile",
       });
 
-      console.log(res,"resss 1")
+      // console.log(res,"resss 1")
       // console.log(res);
 
         fetchMenuList();
-        console.log("api running")
+        // console.log("api running")
         const { token, userDetails } = res.data.data;
         Cookies.set("accesstoken", token, { expires: 1 });
 
@@ -85,7 +88,7 @@ const Login = () => {
     try {
       // Make API request
       const res = await axios.post(
-        "https://aadrikainfomedia.com/auth/api/menu/by-module",
+        getMenuByModule,
         requestBody,
         ApiHeader()
       );
@@ -94,7 +97,7 @@ const Login = () => {
 
       let data = res?.data;
 
-      console.log(data,"4444")
+      // console.log(data,"4444")
 
       localStorage.setItem("menuList", res?.data?.data?.permission);
 

@@ -96,10 +96,8 @@ export default function Incharge_form() {
   const BaseApi = createApiInstance("Base");
   const [inChargeData, Set_inChargeData] = useState();
   const token = localStorage.getItem("token");
-  console.log(uploadedFiles);
 
   const onSubmit = async (values, reset) => {
-    console.log(values);
     set_loading(true);
     if (
       uploadedFiles?.KYC_File === "Error" ||
@@ -135,8 +133,7 @@ export default function Incharge_form() {
           "/onboard-parking-incharge",
           formData
         );
-        console.log("Response from the API");
-        console.log(response);
+    
         const status = response?.data?.status;
         const errorStatus = response?.data?.error?.status;
         if (status == true) {
@@ -161,7 +158,6 @@ export default function Incharge_form() {
     }
   };
   const getImage = async (referenceNumber) => {
-    console.log(referenceNumber);
     const response = await axios.post(
       `${process.env.REACT_APP_DMS}`,
       { referenceNo: referenceNumber },
@@ -172,7 +168,6 @@ export default function Incharge_form() {
         },
       }
     );
-    console.log(response.data?.data?.fullPath);
     const url = response.data?.data?.fullPath?.toString();
     return url;
   };
@@ -183,10 +178,8 @@ export default function Incharge_form() {
     setUploadedFiles,
     setUploading
   ) => {
-    console.log("FIle", file);
     const formData = new FormData();
     formData.append("file", file);
-    // console.log(formData);
     setUploading((prev) => ({ ...prev, [type]: true }));
     try {
       const response = await BaseApi.post("/file-upload", formData);

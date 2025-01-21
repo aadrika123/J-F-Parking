@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 import Header from "../Components/Header/Header";
 import Sidebar from "../Components/Dashboard/Sidebar";
 import { motion } from "framer-motion";

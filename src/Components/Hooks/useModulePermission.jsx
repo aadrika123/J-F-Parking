@@ -4,12 +4,13 @@ import axios from "axios";
 // import ProjectApiList from 'ProjectApiList'
 // import ProjectApiList from '../ap'
 import { useEffect } from "react";
+import ProjectApiList from "../api/ProjectApiList";
 // import ProjectApiList from "../../api/ProjectApiList";
 
 const useModulePermission = () => {
-  // const { api_getFreeMenuList } = ProjectApiList();
+  const { getMenuByModule } = ProjectApiList();
   const token = window.localStorage.getItem("token");
-  console.log(token);
+  // console.log(token);
   const fetchMenuList = () => {
     let requestBody = {
       moduleId: 19,
@@ -17,7 +18,7 @@ const useModulePermission = () => {
 
     axios
       .post(
-        "https://aadrikainfomedia.com/auth/api/menu/by-module",
+        getMenuByModule,
         requestBody,
         {
           headers: {
@@ -36,7 +37,7 @@ const useModulePermission = () => {
 
         // console.log(response, "999999");
         if (response.data.status == true) {
-          console.log("You are not authorized");
+          // console.log("You are not authorized");
           if (response?.data?.data?.permission?.length == 0) {
             window.localStorage.clear();
             window.location.replace("/parking?msg=You are not authorized to access this page. Please contact your administrator for more information.");

@@ -68,7 +68,6 @@ export default function ParkingReport() {
     }
   };
 
-  console.log("selected Incharge",selected_incharge)
 
   const fetchIncharge = async () => {
     try {
@@ -87,9 +86,7 @@ export default function ParkingReport() {
     }
   };
 
-  console.log(incharge);
-  console.log(location);
-
+  
 /*   useEffect(() => {
     fetchData();
   }, [locationId]);
@@ -173,7 +170,6 @@ export default function ParkingReport() {
   }
 
 const handleSubmit = (values) =>{
-  console.log("Form Data",values)
   if(values.selection === "areaId"){
       handleSearchArea(values.location,values.fromDate,values.toDate)
   }else if(values.selection === 'inChargeId' ){
@@ -225,7 +221,6 @@ const handleSearchArea = async(locationID,fromDate,toDate) => {
   }
 }
 
-console.log("data from the server >>> ",data)
   return (
     <>
       <div className="flex flex-1 overflow-scroll ">
@@ -297,7 +292,6 @@ console.log("data from the server >>> ",data)
                       selection:""
                     }}
                     onSubmit={(values,reset) => {
-                      console.log(values);
                       handleSubmit(values)
                     }}
                   >

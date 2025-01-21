@@ -53,8 +53,8 @@ export default function Scheduling_form() {
   const navigate = useNavigate();
 
   //console.log(incharge);
-  console.log(parkingarea);
-  console.log("Selected Incharge >> ", selected_incharge);
+  // console.log(parkingarea);
+  // console.log("Selected Incharge >> ", selected_incharge);
   const [erroropen, set_erroropen] = useState(false);
 
   const errorhandleClickOpen = () => {
@@ -119,7 +119,7 @@ export default function Scheduling_form() {
   }, []);
 
   const onSubmit = async (values) => {
-    console.log(values);
+    // console.log(values);
 
     if (!selected_incharge && !selected_area && !zip_code) {
       return toast.error("Please select location and incharge");
@@ -153,7 +153,7 @@ export default function Scheduling_form() {
 
               return null;
             } else {
-              console.log(res);
+              // console.log(res);
               toast.success("Parking schedule added suucessfully");
               window.location.replace("/parking/ParkingScheduling");
             }

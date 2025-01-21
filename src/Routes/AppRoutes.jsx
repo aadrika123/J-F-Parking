@@ -1,6 +1,6 @@
 // AppRoutes.js
 import React from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Login_main from "../Components/Login/Login_main";
 import PrivateRoute from "./PrivateRoute";
 import ProtectedApproute from "./ProtectedApproute";

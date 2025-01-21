@@ -57,7 +57,7 @@ export function UseServiceCheck() {
         ApiHeader()
       )
         .then(function (response) {
-          console.log(response);
+          // console.log(response);
           if (!response?.data?.status) {
             navigate(
               `/service-restriction?service=${encodeURIComponent(

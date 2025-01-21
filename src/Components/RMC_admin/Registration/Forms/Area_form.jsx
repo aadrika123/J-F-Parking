@@ -65,7 +65,6 @@ export default function Area_form() {
 
   const onSubmit = async (values) => {
     set_loading(true);
-    console.log(values);
     const data = {
       address: values.address,
       zip_code: values.zip_code,
@@ -81,7 +80,6 @@ export default function Area_form() {
         values.type_parking_space === "0" ? values.four_wheeler_rate : "0",
       agreement_doc: uploadedFiles?.agreement_doc?.data[0]?.ReferenceNo,
     };
-    console.log(data);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/onboard-parking-area`,
@@ -107,7 +105,6 @@ export default function Area_form() {
     }
   };
   const getImage = async (referenceNumber) => {
-    console.log(referenceNumber);
     const response = await axios.post(
       `${process.env.REACT_APP_DMS}`,
       { referenceNo: referenceNumber },
@@ -118,7 +115,6 @@ export default function Area_form() {
         },
       }
     );
-    console.log(response.data?.data?.fullPath);
     const url = response.data?.data?.fullPath?.toString();
     return url;
   };
@@ -129,14 +125,12 @@ export default function Area_form() {
     setUploadedFiles,
     setUploading
   ) => {
-    console.log("FIle", file);
     const formData = new FormData();
     const MAX_SIZE = 2 * 1024 * 1024;
 
     formData.append("file", file);
     if (file.size > MAX_SIZE) {
     } else {
-      console.log(formData);
       setUploading((prev) => ({ ...prev, [type]: true }));
       try {
         const response = await BaseApi.post("/file-upload", formData);

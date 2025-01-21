@@ -7,11 +7,11 @@
 //////////////////////////////////////////////////////////////////////
 
 export default function ApiHeader() {
-  console.log("hi")
+  // console.log("hi")
   let token2 = localStorage.getItem("token");
   let roleId = window.localStorage.getItem("roleId");
 
-  console.log(token2,"token2")
+  // console.log(token2,"token2")
 
   const header = {
     timeout: 60000,

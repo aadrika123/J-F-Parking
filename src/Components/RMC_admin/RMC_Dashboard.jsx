@@ -284,10 +284,7 @@ export default function RMC_Dashboard() {
     },
   };
 
-  console.log(
-    "Data >> ",
-    pie?.UnOrganized?.map((item) => item?.total_amount).length
-  );
+  
   const bar2 = {
     series: [
       {

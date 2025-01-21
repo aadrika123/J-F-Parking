@@ -9,6 +9,7 @@ export default function ProjectApiList() {
 
     checkPropertyService: `${baseUrl}/get/services-by-module`,
     getPermittedServiceList: `${baseUrl}/get/services-b-ulb-id`,
+    getMenuByModule: `${baseUrl}/api/menu/by-module`,
   };
 
   return apiList;
