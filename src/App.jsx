@@ -16,7 +16,7 @@ import useModulePermission from "./Components/Hooks/useModulePermission";
 import { UseServiceCheck } from "./Components/Hooks/UseServiceCheck";
 
 function App() {
-  useModulePermission();
+  // useModulePermission();
   UseServiceCheck();
   const [accessToken, setAccessToken] = useState("");
   const [userType, setUserType] = useState("");

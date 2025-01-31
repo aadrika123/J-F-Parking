@@ -38,7 +38,7 @@ export default function RMC_Dashboard() {
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString("en-GB");
 
-  const dates = count.two_wheeler
+  const dates = count?.two_wheeler
     ?.concat(count?.four_wheeler)
     ?.map((item) => formatDate(item.date));
 
@@ -47,7 +47,7 @@ export default function RMC_Dashboard() {
   const formatDates = (dateString) =>
     new Date(dateString).toLocaleDateString("en-GB");
 
-  const datess = count.two_wheeler
+  const datess = count?.two_wheeler
     ?.concat(counts?.four_wheeler)
     ?.map((item) => formatDates(item.date));
 
