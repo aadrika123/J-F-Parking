@@ -74,10 +74,12 @@ export default function Area_form() {
       four_wheeler_capacity: values.four_wheeler_capacity,
       total_parking_area: values.total_parking_area,
       type_parking_space: values.type_parking_space,
-      two_wheeler_rate:
-        values.type_parking_space === "0" ? values.two_wheeler_rate : "0",
-      four_wheeler_rate:
-        values.type_parking_space === "0" ? values.four_wheeler_rate : "0",
+      two_wheeler_rate: values.two_wheeler_rate || "0",
+      four_wheeler_rate: values.four_wheeler_rate || "0",
+      // two_wheeler_rate:
+      //   values.type_parking_space === "0" ? values.two_wheeler_rate : "0",
+      // four_wheeler_rate:
+      //   values.type_parking_space === "0" ? values.four_wheeler_rate : "0",
       agreement_doc: uploadedFiles?.agreement_doc?.data[0]?.ReferenceNo,
     };
     try {
@@ -265,7 +267,7 @@ export default function Area_form() {
                 </div>
                 <div className="flex flex-1 flex-col mt-4">
                   <label className="mb-2 ml-4" htmlFor="total_parking_area">
-                    Total Parking Area
+                    Total Parking Area (sqft)
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
@@ -301,8 +303,8 @@ export default function Area_form() {
                     id="type_parking_space"
                     name="type_parking_space"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
-                    // value={locationId}
-                    // onChange={(e) => setLocationID(e.target.value)}
+                  // value={locationId}
+                  // onChange={(e) => setLocationID(e.target.value)}
                   >
                     <option value="">Select Location</option>
                     <option value="0">Organised</option>
@@ -408,68 +410,71 @@ export default function Area_form() {
                     className="text-red-500 ml-4"
                   />
                 </div>
-                {values.type_parking_space === "0" && (
-                  <>
-                    <div className="flex flex-1 flex-col mt-4">
-                      <label className="mb-2 ml-4" htmlFor="two_wheeler_rate">
-                        Two wheeler Rate
-                        <span className="text-red-500">*</span>
-                      </label>
 
-                      <Field
-                        type="text"
-                        id="two_wheeler_rate"
-                        name="two_wheeler_rate"
-                        className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
-                        style={{ boxShadow: "0 1px 4px #fff" }}
-                        onFocus={(e) =>
-                          (e.target.style.boxShadow = "0 1px 4px #000")
-                        }
-                        onBlur={(e) => (e.target.style.boxShadow = "none")}
-                        maxLength={10}
-                        onKeyPress={(e) => {
-                          if (!(e.key <= "0" || e.key <= "9")) {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-                      <ErrorMessage
-                        name="two_wheeler_rate"
-                        component="div"
-                        className="text-red-500 ml-4"
-                      />
-                    </div>
+                <>
+                  <div className="flex flex-1 flex-col mt-4">
+                    <label className="mb-2 ml-4" htmlFor="two_wheeler_rate">
+                      Two wheeler Rate
+                      <span className="text-red-500">*</span>
+                    </label>
 
-                    <div className="flex flex-1 flex-col mt-4">
-                      <label className="mb-2 ml-4" htmlFor="four_wheeler_rate">
-                        Four wheeler Rate
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <Field
-                        type="text"
-                        id="four_wheeler_rate"
-                        name="four_wheeler_rate"
-                        className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
-                        style={{ boxShadow: "0 1px 4px #fff" }}
-                        onFocus={(e) =>
-                          (e.target.style.boxShadow = "0 1px 4px #000")
+                    <Field
+                      type="text"
+                      id="two_wheeler_rate"
+                      name="two_wheeler_rate"
+                      className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
+                      style={{ boxShadow: "0 1px 4px #fff" }}
+                      onFocus={(e) =>
+                        (e.target.style.boxShadow = "0 1px 4px #000")
+                      }
+                      onBlur={(e) => (e.target.style.boxShadow = "none")}
+                      maxLength={10}
+                      onKeyPress={(e) => {
+                        if (!(e.key <= "0" || e.key <= "9")) {
+                          e.preventDefault();
                         }
-                        onBlur={(e) => (e.target.style.boxShadow = "none")}
-                        maxLength={10}
-                        onKeyPress={(e) => {
-                          if (!(e.key <= "0" || e.key <= "9")) {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-                      <ErrorMessage
-                        name="four_wheeler_rate"
-                        component="div"
-                        className="text-red-500 ml-4"
-                      />
-                    </div>
-                  </>
-                )}
+                      }}
+                    />
+                    <ErrorMessage
+                      name="two_wheeler_rate"
+                      component="div"
+                      className="text-red-500 ml-4"
+                    />
+                  </div>
+
+                  <div className="flex flex-1 flex-col mt-4">
+                    <label
+                      className="mb-2 ml-4"
+                      htmlFor="four_wheeler_rate"
+                    >
+                      Four wheeler Rate
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <Field
+                      type="text"
+                      id="four_wheeler_rate"
+                      name="four_wheeler_rate"
+                      className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
+                      style={{ boxShadow: "0 1px 4px #fff" }}
+                      onFocus={(e) =>
+                        (e.target.style.boxShadow = "0 1px 4px #000")
+                      }
+                      onBlur={(e) => (e.target.style.boxShadow = "none")}
+                      maxLength={10}
+                      onKeyPress={(e) => {
+                        if (!(e.key <= "0" || e.key <= "9")) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <ErrorMessage
+                      name="four_wheeler_rate"
+                      component="div"
+                      className="text-red-500 ml-4"
+                    />
+                  </div>
+                </>
+
 
                 <div className="flex flex-1 flex-col mt-4">
                   <label

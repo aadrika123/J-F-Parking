@@ -16,6 +16,9 @@ import Incharge_Dashboard from "../Components/Ticket_checker/Incharge_Dashboard"
 import Ticket_check from "../Components/Ticket_checker/Ticket_check";
 import Report_generation_checker from "../Components/Ticket_checker/Report/Report_generation_checker";
 import Report_page from "../Components/Ticket_checker/Report/Report_page";
+import AccountantViewPage from "../Components/RMC_admin/Accountant";
+import AccountView from "../Components/RMC_admin/AccountView";
+import Collection_Report from "../Components/RMC_admin/Tables/Collection_Report";
 import ServiceRestrictionLayout from "../Components/pages/error/ServiceRestrictionLayout";
 
 const AppRoutes = ({ access_token, userType }) => {
@@ -62,6 +65,18 @@ const AppRoutes = ({ access_token, userType }) => {
             path="/Scheduling"
             element={<PrivateRoute Element={Parking_Scheduling} />}
           />
+          <Route
+            path="/collection-report"
+            element={<PrivateRoute Element={Collection_Report} />}
+          />
+          {/* <Route
+            path="/accountant"
+            element={<PrivateRoute Element={AccountantViewPage} />}
+          /> */}
+          {/* <Route
+            path="/account-view"
+            element={<PrivateRoute Element={AccountView} />}
+          /> */}
         </>
       )}
       {access_token && userType === "Employee" && (
@@ -81,6 +96,18 @@ const AppRoutes = ({ access_token, userType }) => {
           <Route
             path="/Incharge_Report"
             element={<ProtectedApproute element={Report_page} />}
+          />
+        </>
+      )}
+      {access_token && userType === "Accountant" && (
+        <>
+          <Route
+            path="/accountant"
+            element={<PrivateRoute Element={AccountantViewPage} />}
+          />
+          <Route
+            path="/account-view/:id"
+            element={<PrivateRoute Element={AccountView} />}
           />
         </>
       )}
