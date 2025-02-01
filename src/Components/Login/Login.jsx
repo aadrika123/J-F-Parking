@@ -34,7 +34,7 @@ const Login = () => {
 
   const handleLogin = async (values) => {
     try {
-      setLoading(true); 
+      setLoading(true);
       const res = await Authapi.post("/login", {
         email: values.user_id,
         password: values.password,
@@ -56,6 +56,7 @@ const Login = () => {
         localStorage.setItem("userType", userDetails.user_type);
         localStorage.setItem("userName", userDetails.user_name);
         localStorage.setItem("device", deviceType);
+        localStorage.setItem("name", userDetails?.name);
         // localStorage.setItem("ulbId", userDetails.ulb_id);
         localStorage.setItem("userUlbName", userDetails.ulbName);
         localStorage.setItem("roles", JSON.stringify(userDetails.role));
@@ -68,6 +69,8 @@ const Login = () => {
         } else if (userDetails.user_type === "Employee") {
           localStorage.setItem("InchargeId", userDetails.emp_id);
           window.location.replace("/parking/In_Charge");
+        } else if (userDetails.user_type === "Accountant") {
+          window.location.replace("/parking/accountant");
         } else {
           window.location.replace("/");
         }

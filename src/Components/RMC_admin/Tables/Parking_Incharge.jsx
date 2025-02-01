@@ -273,14 +273,14 @@ export default function Parking_Incharge() {
               {loading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={thead.length}
+                    colSpan={thead?.length}
                     align="center"
                     style={{ padding: "20px", fontSize: "18px" }}
                   >
                     Loading...
                   </TableCell>
                 </TableRow>
-              ) : filteredIncharges.length > 0 ? (
+              ) : filteredIncharges?.length > 0 ? (
                 filteredIncharges.map((incharge, index) => (
                   <TableRow key={incharge.id}>
                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
@@ -330,7 +330,7 @@ export default function Parking_Incharge() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={thead.length}
+                    colSpan={thead?.length}
                     align="center"
                     style={{ padding: "20px", fontSize: "18px" }}
                   >
