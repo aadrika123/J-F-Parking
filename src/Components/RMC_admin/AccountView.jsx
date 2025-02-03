@@ -107,9 +107,17 @@ const AccountView = () => {
     return sum + item?.amount
   }, 0)
 
-  const cashReceipts = data?.receipts?.filter((item) => item?.payment_mode === 'cash')
+
+  // const cashReceipts = data?.receipts?.filter((item) => item?.payment_mode === 'cash')
+
+  // const cashAmount = cashReceipts?.reduce((sum, item) => {
+  //   return sum + item?.amount
+  // }, 0)
+
+  const cashReceipts = data?.accounts_summary?.filter((item) => item?.transaction_type === 'cash')
+
   const cashAmount = cashReceipts?.reduce((sum, item) => {
-    return sum + item?.amount
+    return sum + item?.total_amount
   }, 0)
 
   const qrReceipts = data?.receipts?.filter((item) => item?.payment_mode === 'qr')
@@ -201,7 +209,7 @@ const AccountView = () => {
               Transaction Date:<span className="font-bold">15-07-2024</span>
             </p> */}
               <p className="mb-2 text-gray-700 font-medium">
-                Total Amount:<span className="font-bold"> {totalAmount}</span>
+                Total Amount:<span className="font-bold"> {cashAmount}</span>
               </p>
               <p className="text-gray-700 font-medium">
                 Number of Transactions:<span className="font-bold"> {data?.accounts_summary?.length}</span>

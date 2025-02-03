@@ -67,7 +67,7 @@ const AccountantViewPage = () => {
     { label: "Payee", key: "payee" },
     { label: "Incharge Id", key: "id" },
 
-    { label: "Description", key: "description" },
+    // { label: "Description", key: "description" },
 
     { label: "Action", key: "action" },
   ];
@@ -404,7 +404,7 @@ const formattedDate = `${year}-${month}-${day}`;
                     <td className="px-6 py-4">{`${data?.incharge?.first_name} ${data?.incharge?.last_name}`}</td>
                     <td className="px-6 py-4">{data?.incharge?.cunique_id}</td>
 
-                    <td className="px-6 py-4">{data?.description}</td>
+                    {/* <td className="px-6 py-4">{data?.description}</td> */}
                     <td className="px-6 py-4">
                       <button
                         className="bg-[#4338CA] text-white px-2 py-1 rounded hover:bg-[#373081]"
