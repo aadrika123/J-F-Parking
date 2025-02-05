@@ -443,7 +443,7 @@ export default function ParkingSchedule() {
                     <TableCell>
                       {row.extended_hours && row.extended_hours?.length > 0
                         ? row.extended_hours[row.extended_hours?.length - 1]
-                        : "No Extendev Hrs"}
+                        : "No Extended Hrs"}
                     </TableCell>
                     <TableCell>{formatDate(row.created_at)}</TableCell>
 
