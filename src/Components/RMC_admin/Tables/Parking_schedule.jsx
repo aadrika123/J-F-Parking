@@ -230,13 +230,20 @@ export default function ParkingSchedule() {
         }
       )
       .then((e) => {
-        console.log(e.data?.data.updated.id);
-        if (e.data?.data?.updated.id == delete_id) {
-          set_deleteLoading(false);
+        // console.log(e?.data?.status,"========================>");
+        // if (e.data?.data?.updated.id == delete_id) {
+        //   set_deleteLoading(false);
+        //   dataFetch(page, rowsPerPage);
+        //   errorhandleClose();
+        // } else {
+        //   toast.error("Something went wrong");
+        // }
+
+        if(e?.data?.status === true){
           dataFetch(page, rowsPerPage);
-          errorhandleClose();
-        } else {
-          toast.error("Something went wrong");
+          window.location.reload()
+          errorhandleClose()
+          set_deleteLoading(false);
         }
       })
       .catch((e) => {
