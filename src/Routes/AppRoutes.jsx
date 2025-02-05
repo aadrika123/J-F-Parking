@@ -31,8 +31,8 @@ const AppRoutes = ({ access_token, userType }) => {
         path="/service-restriction"
         element={<PrivateRoute Element={ServiceRestrictionLayout} />}
       />
-      {access_token && userType === "Admin" && (
-        <>
+      {/* {access_token && userType === "Admin" && (
+        <> */}
           <Route
             path="/dashboard"
             element={<PrivateRoute Element={RMC_Dashboard} />}
@@ -77,10 +77,10 @@ const AppRoutes = ({ access_token, userType }) => {
             path="/account-view"
             element={<PrivateRoute Element={AccountView} />}
           /> */}
-        </>
-      )}
-      {access_token && userType === "Employee" && (
-        <>
+        {/* </>
+      )} */}
+      {/* {access_token && userType === "Employee" && (
+        <> */}
           <Route
             path="/In_Charge"
             element={<ProtectedApproute element={Incharge_Dashboard} />}
@@ -97,10 +97,10 @@ const AppRoutes = ({ access_token, userType }) => {
             path="/Incharge_Report"
             element={<ProtectedApproute element={Report_page} />}
           />
-        </>
-      )}
-      {access_token && userType === "Accountant" && (
-        <>
+        {/* </>
+      )} */}
+      {/* {access_token && userType === "Accountant" && (
+        <> */}
           <Route
             path="/accountant"
             element={<PrivateRoute Element={AccountantViewPage} />}
@@ -109,8 +109,8 @@ const AppRoutes = ({ access_token, userType }) => {
             path="/account-view/:id"
             element={<PrivateRoute Element={AccountView} />}
           />
-        </>
-      )}
+        {/* </> */}
+      {/* )} */}
     </Routes>
   );
 };

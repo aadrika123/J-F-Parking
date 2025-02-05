@@ -64,11 +64,22 @@ const Login = () => {
         localStorage.setItem("userEmail", userDetails.email);
         localStorage.setItem("ulbIduserMobile", userDetails.mobile);
 
-        if (userDetails.user_type === "Admin") {
+        // if (userDetails.user_type === "Admin") {
+        //   window.location.replace("/parking/dashboard");
+        // } else if (userDetails.user_type === "Employee") {
+        //   localStorage.setItem("InchargeId", userDetails.emp_id);
+        //   window.location.replace("/parking/In_Charge");
+        // } else if (userDetails.user_type === "Accountant") {
+        //   window.location.replace("/parking/accountant");
+        // } else {
+        //   window.location.replace("/");
+        // }
+
+        if (userDetails.user_type === "Employee") {
           window.location.replace("/parking/dashboard");
-        } else if (userDetails.user_type === "Employee") {
-          localStorage.setItem("InchargeId", userDetails.emp_id);
-          window.location.replace("/parking/In_Charge");
+        } else if (userDetails.user_type === "Admin") {
+          // localStorage.setItem("InchargeId", userDetails.emp_id);
+          window.location.replace("/parking/dashboard");
         } else if (userDetails.user_type === "Accountant") {
           window.location.replace("/parking/accountant");
         } else {
