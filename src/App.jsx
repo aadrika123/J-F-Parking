@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import useModulePermission from "./Components/Hooks/useModulePermission";
 import { UseServiceCheck } from "./Components/Hooks/UseServiceCheck";
+import AutoLogout from "./Components/utils/AutoLogout";
 
 function App() {
   useModulePermission();
@@ -61,9 +62,9 @@ function App() {
 
   return (
     <>
-      {/* <Router basename="/parking"> */}
-        <AppRoutes access_token={accessToken} userType={userType} />
-      {/* </Router> */}
+       <AutoLogout>
+      <AppRoutes access_token={accessToken} userType={userType} />
+    </AutoLogout>
       <Dialog
         open={open}
         onClose={handleClose}
