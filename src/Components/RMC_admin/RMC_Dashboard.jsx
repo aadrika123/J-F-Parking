@@ -8,6 +8,40 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { TurnLeftOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  useTheme,
+} from '@mui/material';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from 'recharts';
+
+
+
+
+
+// import DatePicker from "react-datepicker"
+// import "react-datepicker/dist/react-datepicker.css"
+// import { FaCalendarAlt } from "react-icons/fa"
+
+const yearlyTotal = 500000; // Replace with your calculated total
+const weeklyTotal = 80000;
+const datewiseTotal = 23000;
 
 export default function RMC_Dashboard() {
   const navigate = useNavigate();
@@ -34,6 +68,60 @@ export default function RMC_Dashboard() {
   const totalBill = statisticsData?.map((item) => item?.vehicle_count);
   const totalBillSum = totalBill?.reduce((sum, item) => sum + item, 0);
   const token = Cookies.get("accesstoken");
+
+
+  const [selectedYear, setSelectedYear] = useState(new Date());
+  const [weekFrom, setWeekFrom] = useState(new Date());
+  const [weekTo, setWeekTo] = useState(new Date());
+  const [dateFrom, setDateFrom] = useState(new Date());
+  const [dateTo, setDateTo] = useState(new Date());
+
+
+  const yearlyData = [
+    { year: "2011", value: 30 },
+    { year: "2012", value: 40 },
+    { year: "2013", value: 40 },
+    { year: "2014", value: 50 },
+    { year: "2015", value: 40 },
+    { year: "2016", value: 55 },
+    { year: "2017", value: 70 },
+  ];
+
+  const monthlyData = [
+    { month: "Jan", value: 102 },
+    { month: "Feb", value: 100 },
+    { month: "Mar", value: 103 },
+    { month: "Apr", value: 99 },
+    { month: "May", value: 106 },
+    { month: "Jun", value: 122 },
+    { month: "Jul", value: 134 },
+    { month: "Aug", value: 142 },
+    { month: "Sep", value: 145 },
+    { month: "Oct", value: 148 },
+    { month: "Nov", value: 153 },
+    { month: "Dec", value: 150 },
+  ];
+
+  const weeklyData = [
+    { week: "W1", value: 50 },
+    { week: "W2", value: 30 },
+    { week: "W3", value: 60 },
+    { week: "W4", value: 70 },
+    { week: "W5", value: 90 },
+    // { week: "W6", value: 40 },
+    // { week: "W7", value: 55 },
+    // { week: "W8", value: 65 },
+    // { week: "W9", value: 80 },
+    // { week: "W10", value: 60 },
+    // { week: "W11", value: 75 },
+    // { week: "W12", value: 85 },
+    // { week: "W13", value: 95 },
+    // { week: "W14", value: 70 },
+    // { week: "W15", value: 50 },
+    // { week: "W16", value: 60 },
+    // { week: "W17", value: 65 },
+    // { week: "W18", value: 55 },
+  ];
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,7 +383,7 @@ export default function RMC_Dashboard() {
     },
   };
 
-  
+
   const bar2 = {
     series: [
       {
@@ -390,7 +478,10 @@ export default function RMC_Dashboard() {
   }, [fromDates, toDates]);
 
 
-  const currentDate = formatDate(new Date());
+  // const currentDate = formatDate(new Date());
+  const currentDate = new Date().toLocaleDateString();
+  const [selectedOption, setSelectedOption] = useState("Yearly");
+
 
   const hourlyReceipts = hourlyRealTimeData.map(item => item?.customer_count)
   let buffer = 0
@@ -518,19 +609,78 @@ export default function RMC_Dashboard() {
   };
 
 
+  const dataMap = {
+    Yearly: {
+      title: "Yearly Collection",
+      data: yearlyData,
+      total: yearlyData[yearlyData.length - 1].value,
+      unit: "₹",
+      chart: (
+        <ResponsiveContainer width="100%" height={265}>
+          <LineChart data={yearlyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="year" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke="#00BCD4" strokeWidth={3} dot={{ r: 5 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      ),
+    },
+    Monthly: {
+      title: "Monthly ARPU (Last 12 Months)",
+      data: monthlyData,
+      total: monthlyData[monthlyData.length - 1].value,
+      unit: "$",
+      chart: (
+        <ResponsiveContainer width="100%" height={265}>
+          <AreaChart data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Area type="monotone" dataKey="value" stroke="#0288D1" fill="#B3E5FC" strokeWidth={2} />
+          </AreaChart>
+        </ResponsiveContainer>
+      ),
+    },
+    Weekly: {
+      title: "Weekly Revenue Collection",
+      data: weeklyData,
+      total: weeklyData.reduce((acc, d) => acc + d.value, 0),
+      unit: "$",
+      chart: (
+        <ResponsiveContainer width="100%" height={265}>
+          <BarChart data={weeklyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="week" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" fill="#03A9F4" barSize={25} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      ),
+    },
+  };
+
+  const { title, total, unit, chart } = dataMap[selectedOption];
+
+
   return (
     <>
-      <div className="flex flex-1 overflow-y-scroll overflow-x-scroll ">
+      <div className="flex flex-1 overflow-y-scroll overflow-x-hidden">
         <div className="flex flex-col flex-1 bg-[#F9FAFC]">
           <div className="flex h-10 justify-between items-center mt-5 p-5">
 
             <div className="flex text-xl font-semibold  mr-4">
               Parking Report
+
             </div>
           </div>
 
           <div className="flex flex-col overflow-y-scroll">
             <div className="flex flex-row justify-end item-center mx-10 ">
+
               <Button
                 variant="contained"
                 onClick={() => { navigate('/collection-report') }}
@@ -538,16 +688,109 @@ export default function RMC_Dashboard() {
                 Collection Report
               </Button>
             </div>
+
+            {/* Graphs sections */}
+
+            <div className="w-full flex flex-row flex-wrap gap-4 mx-5 my-5 ">
+              {/* Yearly Collection Card */}
+              <div className="w-full md:w-[27%] bg-white shadow-lg rounded-md p-5">
+                <div className="flex items-center justify-between text-xl mb-2">
+                  <div className="flex items-center">
+                    <i className="mr-2">{/* icon */}</i>
+                    Yearly Collection
+                  </div>
+                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                </div>
+                <div className="flex justify-end my-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[#095ea4] text-2xl font-bold">₹{yearlyData[yearlyData.length - 1].value}</span>
+                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={265}>
+                    <LineChart data={yearlyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="year" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#00BCD4" strokeWidth={3} dot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Monthly ARPU Card */}
+              <div className="w-full md:w-[36%] bg-white shadow-lg rounded-md p-5">
+                <div className="flex items-center justify-between text-xl mb-2">
+                  <div className="flex items-center">
+                    <i className="mr-2">{/* icon */}</i>
+                    Monthly ARPU (Last 12 Months)
+                  </div>
+                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                </div>
+                <div className="flex justify-end my-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[#095ea4] text-2xl font-bold">₹{monthlyData[monthlyData.length - 1].value}</span>
+                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={265}>
+                    <AreaChart data={monthlyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" interval={0} angle={-35} textAnchor="end" />
+                      <YAxis />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="value" stroke="#0288D1" fill="#B3E5FC" strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Weekly Revenue Collection */}
+              <div className="w-full md:w-[30%] bg-white shadow-lg rounded-md p-5">
+                <div className="flex items-center justify-between text-xl mb-2">
+                  <div className="flex items-center">
+                    <i className="mr-2">{/* icon */}</i>
+                    Weekly Revenue Collection
+                  </div>
+                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                </div>
+                <div className="flex justify-end my-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      ₹{weeklyData.reduce((acc, d) => acc + d.value, 0)}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={265}>
+                    <BarChart data={weeklyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="week" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="#03A9F4" barSize={25} radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+
             <div className="flex flex-1 justify-center items-center">
+
               {/* col-1 */}
 
               <div
-                className={` w-auto md:w-1/2 sm:w-full h-auto mx-5 my-5 flex flex-col relative bg-[#fff] shadow-lg `}
-              >
+                className={` w-auto md:w-1/2 sm:w-full h-auto mx-5 my-5 flex flex-col relative bg-[#fff] shadow-lg `}  >
                 <div className="w-full flex flex-col sm:flex-row justify-between">
+
                   <div
-                    className={` w-auto  sm:w-full h-auto mx-5 my-5 flex flex-col overflow-auto relative bg-[#fff] p-5 shadow-lg rounded-md`}
-                  >
+                    className={` w-auto  sm:w-full h-auto mx-5 my-5 flex flex-col overflow-auto relative bg-[#fff] p-5 shadow-lg rounded-md`} >
+
                     <div className="flex items-center justify-between text-xl">
                       <div className="flex items-center">
                         <i className="mr-2">
@@ -582,8 +825,7 @@ export default function RMC_Dashboard() {
                     </div>
                     <div className="w-full flex justify-end ">
                       <div
-                        className={` mr-4  flex flex-col items-center justify-center `}
-                      >
+                        className={` mr-4  flex flex-col items-center justify-center `}>
                         <span className="text-[#095ea4] text-2xl font-bold">
                           ₹{hourlyAmountsSum}
                         </span>
@@ -592,8 +834,7 @@ export default function RMC_Dashboard() {
                         </h4>
                       </div>
                       <div
-                        className={` mr-4  flex flex-col items-center justify-center `}
-                      >
+                        className={` mr-4  flex flex-col items-center justify-center `} >
                         <span className="text-[#095ea4] text-2xl font-bold">
                           {hourlyReceiptsSum}
                         </span>
