@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import bus from "../../assets/bus 1.png";

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import { useLocation } from "react-router-dom";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { FaArrowLeftLong } from "react-icons/fa6";

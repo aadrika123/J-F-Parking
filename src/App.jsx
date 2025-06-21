@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+// import { BrowserRouter as Router } from "react-router-dom";
+// import Cookies from "js-cookie";
 import AppRoutes from "./Routes/AppRoutes";
 import img from "./assets/loader.json";
 import Lottie from "lottie-react";
