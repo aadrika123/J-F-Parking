@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/slice/slice.jsx'; 
 import { useNavigate } from 'react-router-dom';
 
-const AutoLogout = ({ children, timeout = 1 * 60 * 1000 }) => {
+const AutoLogout = ({ children, timeout = 30 * 60 * 1000 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const timerRef = useRef();
