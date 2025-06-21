@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import AppRoutes from "./Routes/AppRoutes";
 import img from "./assets/loader.json";
 import Lottie from "lottie-react";
+// import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogActions,
@@ -62,6 +63,7 @@ function App() {
 
   return (
     <>
+   
        <AutoLogout>
       <AppRoutes access_token={accessToken} userType={userType} />
     </AutoLogout>
