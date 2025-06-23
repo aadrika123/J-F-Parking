@@ -6,6 +6,8 @@
 // 👉 Functions   :
 //                  1. dropFun -> To handle drop down.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* eslint-disable no-unused-vars */
+
 "use client";
 // 👉 Importing Packages 👈
 import React, { useEffect, useState } from "react";
@@ -26,7 +28,7 @@ import ProjectApiList from "../api/ProjectApiList";
 
 const SideBar = (props) => {
   // 👉 State constants 👈
-  const [dropDown, setdropDown] = useState(false);
+  // const [dropDown, setdropDown] = useState(false);
   const [toggleBar, settoggleBar] = useState(false);
   const [dropName, setdropName] = useState("");
   const [userdetails, setUserDetails] = useState();
@@ -34,24 +36,28 @@ const SideBar = (props) => {
 
   const { getMenuByModule } = ProjectApiList();
 
+  console.log(settoggleBar)
+  console.log(dropName)
+  console.log(setdropName)
+
   let bg = "slate"; // background color
-  let mcolor = "blue"; // menu color
+  // let mcolor = "blue"; // menu color
   let tcolor = "gray"; // text color
 
   // 👉 CSS constants 👈
-  const dropMenuBtn = `block w-full pl-7 py-3 px-6 clear-both whitespace-nowrap text-sm hover:bg-${mcolor}-700 hover:text-${tcolor}-100 rounded-md text-sm animate__animated animate__fadeIn animate__faster `;
+  // const dropMenuBtn = `block w-full pl-7 py-3 px-6 clear-both whitespace-nowrap text-sm hover:bg-${mcolor}-700 hover:text-${tcolor}-100 rounded-md text-sm animate__animated animate__fadeIn animate__faster `;
 
-  const mobileMenuBtn = `block py-3 px-4 hover:bg-${mcolor}-700 hover:text-${tcolor}-100 rounded-md animate__animated animate__fadeIn animate__faster `;
-  const open1 = `animate__animated animate__slideInLeft animate__faster bg-${bg}-100 w-[16.5rem] `;
+  // const mobileMenuBtn = `block py-3 px-4 hover:bg-${mcolor}-700 hover:text-${tcolor}-100 rounded-md animate__animated animate__fadeIn animate__faster `;
+  // const open1 = `animate__animated animate__slideInLeft animate__faster bg-${bg}-100 w-[16.5rem] `;
   const open3 = `animate__animated animate__fadeInLeft animate__faster `;
-  const close1 = `w-0 sm:w-3 bg-${bg}-100 animate__animated `;
+  // const close1 = `w-0 sm:w-3 bg-${bg}-100 animate__animated `;
   const close3 = `animate__animated animate__fadeOutLeft animate__faster `;
 
   // 👉 Function 1 👈
-  const dropFun = (val) => {
-    setdropDown(!dropDown);
-    setdropName(val);
-  };
+  // const dropFun = (val) => {
+  //   setdropDown(!dropDown);
+  //   setdropName(val);
+  // };
 
   const token = Cookies.get("accesstoken");
   // console.log(token,"tokentokentoken")

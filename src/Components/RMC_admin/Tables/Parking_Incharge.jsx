@@ -60,6 +60,7 @@ export default function Parking_Incharge() {
 
   const [errorOpen, setErrorOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
+  const [tableData, setTableData] = useState("");
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loading, set_loading] = useState(false);
 
@@ -82,6 +83,48 @@ export default function Parking_Incharge() {
 
   const handleClose = () => {
     setErrorOpen(false);
+  };
+
+  const handleApprovalToggle = (id, currentStatus) => {
+    set_loading(true);
+    BaseApi.post(
+      `/update-parking-incharge?id=${id}`,
+      { is_approved: !currentStatus },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((response) => {
+        if (response.data) {
+          toast.success("Approval status updated");
+          BaseApi.get(
+            `/get-parking-incharge?limit=${rowsPerPage}&page=${page + 1}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+            .then((res) => {
+              setTableData(res?.data?.data); // assuming you have a setter
+            })
+            .catch((err) => {
+              console.error("Failed to fetch updated list", err);
+              toast.error("Failed to refresh list");
+            });
+        } else {
+          toast.error("Update failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to update approval status", error);
+        toast.error("Something went wrong");
+      })
+      .finally(() => {
+        set_loading(false);
+      });
   };
 
   const getImage = async (referenceNumber) => {
@@ -374,6 +417,20 @@ export default function Parking_Incharge() {
                   </TableCell>
 
 
+                    <TableCell>
+                      <button
+                        onClick={() => handleApprovalToggle(incharge.id)}
+                        className={`px-3 py-1 rounded text-xs font-bold transition-all duration-200 ${
+                          incharge.is_approved === false
+                            ? "bg-red-200 text-red-600 hover:bg-red-300"
+                            : "bg-green-100 text-green-700 hover:bg-green-200"
+                        }`}
+                      >
+                        {incharge.is_approved === false
+                          ? "Not Approved"
+                          : "Approved"}
+                      </button>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-1 flex-row">
                         <Button onClick={() => handleClickOpen(incharge.id)}>
