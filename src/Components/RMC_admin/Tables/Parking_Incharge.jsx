@@ -252,10 +252,7 @@ export default function Parking_Incharge() {
   const handleappve =(incharge_id,status)=>{
     console.log("incharge_id",incharge_id,status)
     
-
-
-
-     setLoadingDelete(true);
+    setLoadingDelete(true);
     axios
       .post(
         `${process.env.REACT_APP_BASE_URL}/update-parking-incharge?id=${incharge_id}`,
