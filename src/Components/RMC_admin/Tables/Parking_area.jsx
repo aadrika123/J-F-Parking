@@ -58,6 +58,7 @@ const thead = [
   { name: "Address" },
   { name: "Street Address" },
   { name: "Parking Type" },
+  { name: "Sub Type" },
   { name: "Zip / Postcode" },
   { name: "Parking Rate" },
   { name: "Parking Capacity" },
@@ -83,7 +84,7 @@ const styles = {
 };
 
 export default function ParkingArea({ location }) {
-  console.log(location);
+  // console.log(location);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -195,7 +196,7 @@ export default function ParkingArea({ location }) {
     dataFetch(page, rowsPerPage);
   }, [page, rowsPerPage]);
 
-  console.log("data", data);
+  // console.log("data", data);
 
   const deletehandle = () => {
     set_loadingdelete(true);
@@ -228,8 +229,8 @@ export default function ParkingArea({ location }) {
       });
   };
 
-  console.log("Data to be mapped: ", data);
-  console.log("Filter Area", filteredArea);
+  // console.log("Data to be mapped: ", data);
+  // console.log("Filter Area", filteredArea);
 
   return (
     <>
@@ -316,6 +317,7 @@ export default function ParkingArea({ location }) {
                     <TableCell>{row.address}</TableCell>
                     <TableCell>{row.landmark}</TableCell>
                     <TableCell>{row.type_parking_space}</TableCell>
+                    <TableCell>{row.sub_type_parking_space == null ? "N/A": row.sub_type_parking_space}</TableCell>
                     <TableCell>{row.zip_code}</TableCell>
                     <TableCell>
                       <div className="flex flex-1 justify-start items-start flex-row gap-4">
