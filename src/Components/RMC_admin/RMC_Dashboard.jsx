@@ -63,8 +63,10 @@ export default function RMC_Dashboard() {
   const [hourlyRealTimeData, setHourlyRealTimeData] = useState([]);
   const [statisticsData, setStatisticsData] = useState([]);
   const categories = statisticsData?.map((item) => new Date(item?.date).toISOString().split('T')[0]);
+
   const totalAmount = statisticsData?.map((item) => item?.total_amount);
   const totalAmountSum = totalAmount?.reduce((sum, item) => sum + item, 0);
+  
   const totalBill = statisticsData?.map((item) => item?.vehicle_count);
   const totalBillSum = totalBill?.reduce((sum, item) => sum + item, 0);
   const token = Cookies.get("accesstoken");
