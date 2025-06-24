@@ -72,7 +72,7 @@ export default function ParkingIncharge() {
               </div>
             </div>
             <div className="flex text-xl font-semibold  mr-4">
-              Parking In-Charge
+              Parking In-Charge  
             </div>
           </div>
 

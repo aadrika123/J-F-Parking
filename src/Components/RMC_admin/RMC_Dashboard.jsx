@@ -10,6 +10,8 @@ import { TurnLeftOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import toast, { Toaster } from "react-hot-toast";
+import createApiInstance from "../../AxiosInstance";
 import {
   Box,
   Typography,
@@ -66,10 +68,11 @@ export default function RMC_Dashboard() {
 
   const totalAmount = statisticsData?.map((item) => item?.total_amount);
   const totalAmountSum = totalAmount?.reduce((sum, item) => sum + item, 0);
-  
+
   const totalBill = statisticsData?.map((item) => item?.vehicle_count);
   const totalBillSum = totalBill?.reduce((sum, item) => sum + item, 0);
   const token = Cookies.get("accesstoken");
+  
 
 
   const [selectedYear, setSelectedYear] = useState(new Date());
@@ -77,17 +80,102 @@ export default function RMC_Dashboard() {
   const [weekTo, setWeekTo] = useState(new Date());
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
+  const BaseApi = createApiInstance("Base");
 
 
-  const yearlyData = [
-    { year: "2011", value: 30 },
-    { year: "2012", value: 40 },
-    { year: "2013", value: 40 },
-    { year: "2014", value: 50 },
-    { year: "2015", value: 40 },
-    { year: "2016", value: 55 },
-    { year: "2017", value: 70 },
-  ];
+//   const handleApprovalToggle = async () => {
+//   try {
+    
+
+//     const response = await BaseApi.get(
+//       `/report/yearly`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
+
+//     console.log(response)
+//     if (response?.data?.data) {
+//       // setTableData(response.data.data);
+
+//       toast.success("Data refreshed successfully");
+//     } else {
+//       toast.error("Failed to fetch data");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     toast.error("Something went wrong while fetching the data");
+//   } finally {
+    
+//   }
+// };
+
+// useEffect(() => {
+//   handleApprovalToggle()
+// }, [])
+
+
+const [yearlyData, setYearlyData] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const fetchYearlyCollection = async () => {
+    try {
+      setLoading(true)
+      const res = await BaseApi.get("/report/yearly", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      const data = res?.data?.data
+      if (!data) throw new Error("No data found")
+
+      const combinedData = [...data.Organized, ...data.UnOrganized]
+
+      // Group by year and sum total_amount
+      const yearlyTotals = {}
+
+      combinedData.forEach((item) => {
+        const year = new Date(item.date).getFullYear()
+        const amount = item.total_amount || 0
+
+        if (yearlyTotals[year]) {
+          yearlyTotals[year] += amount
+        } else {
+          yearlyTotals[year] = amount
+        }
+      })
+
+      const formatted = Object.entries(yearlyTotals).map(([year, value]) => ({
+        year,
+        value,
+      }))
+
+      setYearlyData(formatted)
+      toast.success("Yearly collection loaded")
+    } catch (err) {
+      console.error("Error loading yearly collection:", err)
+      toast.error("Failed to load yearly collection")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchYearlyCollection()
+  }, [])
+
+
+
+  // const yearlyData = [
+  //   { year: "2011", value: 30 },
+  //   { year: "2012", value: 40 },
+  //   { year: "2013", value: 40 },
+  //   { year: "2014", value: 50 },
+  //   { year: "2015", value: 40 },
+  //   { year: "2016", value: 55 },
+  //   { year: "2017", value: 70 },
+  // ];
 
   const monthlyData = [
     { month: "Jan", value: 102 },
@@ -615,7 +703,7 @@ export default function RMC_Dashboard() {
     Yearly: {
       title: "Yearly Collection",
       data: yearlyData,
-      total: yearlyData[yearlyData.length - 1].value,
+      total: yearlyData[yearlyData?.length - 1]?.value || 100,
       unit: "₹",
       chart: (
         <ResponsiveContainer width="100%" height={265}>
@@ -691,45 +779,187 @@ export default function RMC_Dashboard() {
               </Button>
             </div>
 
+            <div className="flex justify-between gap-4 p-4">
+              {/* Box 1 */}
+              <div className="w-1/3 h-40 bg-white shadow-lg rounded  p-4">
+                <div className="flex items-center justify-center ">
+                  <i className="mr-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 32 32"
+                      fill="none"
+                    >
+                      <rect width="32" height="32" rx="9" fill="#665DD9" />
+                      <path
+                        d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                        fill="white"
+                        fillOpacity="0.92"
+                      />
+                    </svg>
+                  </i>
+                  Real time collection
+                </div>
+                <div className="w-full flex justify-center pt-4">
+                  <div
+                    className={` mr-4  flex flex-col items-center justify-center `}>
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      ₹{hourlyAmountsSum}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">
+                      Total Amount
+                    </h4>
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 2 */}
+              <div className="w-1/3 h-40 bg-white shadow-lg rounded  p-4">
+                <div className="flex items-center justify-center ">
+                  <i className="mr-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 32 32"
+                      fill="none"
+                    >
+                      <rect width="32" height="32" rx="9" fill="#665DD9" />
+                      <path
+                        d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                        fill="white"
+                        fillOpacity="0.92"
+                      />
+                    </svg>
+                  </i>
+                  Real time collection
+                </div>
+                <div className="w-full flex justify-center pt-4">
+
+                  <div
+                    className={` mr-4  flex flex-col items-center justify-center `} >
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      {hourlyReceiptsSum}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">
+                      Total bill cut
+                    </h4>
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 3 */}
+              <div className="w-1/3 h-40 bg-white shadow-lg rounded  p-4">
+                <div className="flex items-center justify-center ">
+                  <i className="mr-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 32 32"
+                      fill="none"
+                    >
+                      <rect width="32" height="32" rx="9" fill="#665DD9" />
+                      <path
+                        d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                        fill="white"
+                        fillOpacity="0.92"
+                      />
+                    </svg>
+                  </i>
+                  Real time collection
+                </div>
+                <div className="w-full flex justify-center pt-4">
+                  <div
+                    className={` mr-4  flex flex-col items-center justify-center `}>
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      ₹{hourlyAmountsSum}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">
+                      Total Amount
+                    </h4>
+                  </div>
+                  <div
+                    className={` mr-4  flex flex-col items-center justify-center `} >
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      {hourlyReceiptsSum}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">
+                      Total bill cut
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Graphs sections */}
 
             <div className="w-full flex flex-row flex-wrap gap-4 mx-5 my-5 ">
               {/* Yearly Collection Card */}
-              <div className="w-full md:w-[27%] bg-white shadow-lg rounded-md p-5">
-                <div className="flex items-center justify-between text-xl mb-2">
-                  <div className="flex items-center">
-                    <i className="mr-2">{/* icon */}</i>
-                    Yearly Collection
-                  </div>
-                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
-                </div>
-                <div className="flex justify-end my-2">
-                  <div className="flex flex-col items-center">
-                    <span className="text-[#095ea4] text-2xl font-bold">₹{yearlyData[yearlyData.length - 1].value}</span>
-                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
-                  </div>
-                </div>
-                <div className="w-full">
-                  <ResponsiveContainer width="100%" height={265}>
-                    <LineChart data={yearlyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="year" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line type="monotone" dataKey="value" stroke="#00BCD4" strokeWidth={3} dot={{ r: 5 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+            <div className="w-full md:w-[27%] bg-white shadow-lg rounded-md p-5">
+      <div className="flex items-center justify-between text-xl mb-2">
+        <div className="flex items-center">
+          <i className="mr-2">
+            {/* SVG ICON */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="9" fill="#665DD9" />
+              <path
+                d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                fill="white"
+                fillOpacity="0.92"
+              />
+            </svg>
+          </i>
+          Yearly Collection
+        </div>
+      </div>
+
+      <div className="flex justify-end my-2">
+        <div className="flex flex-col items-center">
+          <span className="text-[#095ea4] text-2xl font-bold">
+            ₹{yearlyData.length ? yearlyData[yearlyData.length - 1].value : 0}
+          </span>
+          <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+        </div>
+      </div>
+
+      <div className="w-full">
+        <ResponsiveContainer width="100%" height={265}>
+          <LineChart data={yearlyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="year" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke="#00BCD4" strokeWidth={3} dot={{ r: 5 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
 
               {/* Monthly ARPU Card */}
               <div className="w-full md:w-[36%] bg-white shadow-lg rounded-md p-5">
                 <div className="flex items-center justify-between text-xl mb-2">
                   <div className="flex items-center">
-                    <i className="mr-2">{/* icon */}</i>
-                    Monthly ARPU (Last 12 Months)
+                    <i className="mr-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 32 32"
+                        fill="none"
+                      >
+                        <rect width="32" height="32" rx="9" fill="#665DD9" />
+                        <path
+                          d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                          fill="white"
+                          fillOpacity="0.92"
+                        />
+                      </svg>
+                    </i>
+                    Monthly Collection
                   </div>
-                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                  {/* <div className="text-sm">{new Date().toLocaleDateString()}</div> */}
                 </div>
                 <div className="flex justify-end my-2">
                   <div className="flex flex-col items-center">
@@ -754,10 +984,25 @@ export default function RMC_Dashboard() {
               <div className="w-full md:w-[30%] bg-white shadow-lg rounded-md p-5">
                 <div className="flex items-center justify-between text-xl mb-2">
                   <div className="flex items-center">
-                    <i className="mr-2">{/* icon */}</i>
-                    Weekly Revenue Collection
+                    <i className="mr-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 32 32"
+                        fill="none"
+                      >
+                        <rect width="32" height="32" rx="9" fill="#665DD9" />
+                        <path
+                          d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                          fill="white"
+                          fillOpacity="0.92"
+                        />
+                      </svg>
+                    </i>
+                    Weekly Collection
                   </div>
-                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                  {/* <div className="text-sm">{new Date().toLocaleDateString()}</div> */}
                 </div>
                 <div className="flex justify-end my-2">
                   <div className="flex flex-col items-center">
