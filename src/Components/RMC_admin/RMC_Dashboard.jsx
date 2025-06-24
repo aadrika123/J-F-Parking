@@ -220,60 +220,7 @@ export default function RMC_Dashboard() {
   }, []);
 
 
-  // const [weeklyData, setWeeklyData] = useState([]);
-  // const [loadingWeek, setLoadingWeek] = useState(false);
-
-  // const fetchWeeklyCollection = async () => {
-  //   try {
-  //     setLoadingWeek(true);
-  //     const res = await BaseApi.get("/report/weekly-collection", {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-
-  //     const data = res?.data?.data;
-  //     if (!data) throw new Error("No data found");
-
-  //     const combinedData = [...data.Organized, ...data.UnOrganized];
-
-  //     const weeklyTotals = {};
-
-  //     combinedData.forEach((item) => {
-  //       const date = new Date(item.date);
-  //       const weekStart = new Date(date);
-  //       weekStart.setDate(date.getDate() - date.getDay()); // Sunday as week start
-
-  //       const key = weekStart.toLocaleDateString("en-GB", {
-  //         day: "2-digit",
-  //         month: "short",
-  //         year: "numeric",
-  //       });
-
-  //       const amount = item.total_amount || 0;
-
-  //       if (weeklyTotals[key]) {
-  //         weeklyTotals[key] += amount;
-  //       } else {
-  //         weeklyTotals[key] = amount;
-  //       }
-  //     });
-
-  //     const formatted = Object.entries(weeklyTotals)
-  //       .map(([week, value]) => ({ week, value }))
-  //       .sort((a, b) => new Date(a.week) - new Date(b.week));
-
-  //     setWeeklyData(formatted);
-  //     toast.success("Weekly collection loaded");
-  //   } catch (err) {
-  //     console.error("Error loading weekly collection:", err);
-  //     toast.error("Failed to load weekly collection");
-  //   } finally {
-  //     setLoadingWeek(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchWeeklyCollection();
-  // }, []);
+ 
 
   const [selectedMonth, setSelectedMonth] = useState(new Date())
 const [weeklyData, setWeeklyData] = useState([])
