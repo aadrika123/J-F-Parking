@@ -72,7 +72,7 @@ export default function RMC_Dashboard() {
   const totalBill = statisticsData?.map((item) => item?.vehicle_count);
   const totalBillSum = totalBill?.reduce((sum, item) => sum + item, 0);
   const token = Cookies.get("accesstoken");
-  
+
 
 
   const [selectedYear, setSelectedYear] = useState(new Date());
@@ -83,41 +83,41 @@ export default function RMC_Dashboard() {
   const BaseApi = createApiInstance("Base");
 
 
-//   const handleApprovalToggle = async () => {
-//   try {
-    
-
-//     const response = await BaseApi.get(
-//       `/report/yearly`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-
-//     console.log(response)
-//     if (response?.data?.data) {
-//       // setTableData(response.data.data);
-
-//       toast.success("Data refreshed successfully");
-//     } else {
-//       toast.error("Failed to fetch data");
-//     }
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     toast.error("Something went wrong while fetching the data");
-//   } finally {
-    
-//   }
-// };
-
-// useEffect(() => {
-//   handleApprovalToggle()
-// }, [])
+  //   const handleApprovalToggle = async () => {
+  //   try {
 
 
-const [yearlyData, setYearlyData] = useState([])
+  //     const response = await BaseApi.get(
+  //       `/report/yearly`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log(response)
+  //     if (response?.data?.data) {
+  //       // setTableData(response.data.data);
+
+  //       toast.success("Data refreshed successfully");
+  //     } else {
+  //       toast.error("Failed to fetch data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     toast.error("Something went wrong while fetching the data");
+  //   } finally {
+
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   handleApprovalToggle()
+  // }, [])
+
+
+  const [yearlyData, setYearlyData] = useState([])
   const [loading, setLoading] = useState(false)
 
   const fetchYearlyCollection = async () => {
@@ -166,52 +166,186 @@ const [yearlyData, setYearlyData] = useState([])
   }, [])
 
 
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [loadingMonth, setLoadingMonth] = useState(false);
 
-  // const yearlyData = [
-  //   { year: "2011", value: 30 },
-  //   { year: "2012", value: 40 },
-  //   { year: "2013", value: 40 },
-  //   { year: "2014", value: 50 },
-  //   { year: "2015", value: 40 },
-  //   { year: "2016", value: 55 },
-  //   { year: "2017", value: 70 },
-  // ];
+  const fetchMonthlyCollection = async () => {
+    try {
+      setLoadingMonth(true);
+      const res = await BaseApi.get("/report/monthly", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-  const monthlyData = [
-    { month: "Jan", value: 102 },
-    { month: "Feb", value: 100 },
-    { month: "Mar", value: 103 },
-    { month: "Apr", value: 99 },
-    { month: "May", value: 106 },
-    { month: "Jun", value: 122 },
-    { month: "Jul", value: 134 },
-    { month: "Aug", value: 142 },
-    { month: "Sep", value: 145 },
-    { month: "Oct", value: 148 },
-    { month: "Nov", value: 153 },
-    { month: "Dec", value: 150 },
-  ];
+      const data = res?.data?.data;
+      if (!data) throw new Error("No data found");
 
-  const weeklyData = [
-    { week: "W1", value: 50 },
-    { week: "W2", value: 30 },
-    { week: "W3", value: 60 },
-    { week: "W4", value: 70 },
-    { week: "W5", value: 90 },
-    // { week: "W6", value: 40 },
-    // { week: "W7", value: 55 },
-    // { week: "W8", value: 65 },
-    // { week: "W9", value: 80 },
-    // { week: "W10", value: 60 },
-    // { week: "W11", value: 75 },
-    // { week: "W12", value: 85 },
-    // { week: "W13", value: 95 },
-    // { week: "W14", value: 70 },
-    // { week: "W15", value: 50 },
-    // { week: "W16", value: 60 },
-    // { week: "W17", value: 65 },
-    // { week: "W18", value: 55 },
-  ];
+      const combinedData = [...data.Organized, ...data.UnOrganized];
+
+      const monthlyTotals = {};
+
+      combinedData.forEach((item) => {
+        const date = new Date(item.date);
+        const monthYear = `${date.toLocaleString("default", {
+          month: "short",
+        })} ${date.getFullYear()}`;
+        const amount = item.total_amount || 0;
+
+        if (monthlyTotals[monthYear]) {
+          monthlyTotals[monthYear] += amount;
+        } else {
+          monthlyTotals[monthYear] = amount;
+        }
+      });
+
+      const formatted = Object.entries(monthlyTotals)
+        .map(([month, value]) => ({ month, value }))
+        .sort((a, b) => {
+          // Parse month-year string into actual Date objects to sort correctly
+          const parse = (m) => new Date(`1 ${m}`);
+          return parse(a.month) - parse(b.month);
+        });
+
+      setMonthlyData(formatted);
+      toast.success("Monthly collection loaded");
+    } catch (err) {
+      console.error("Error loading monthly collection:", err);
+      toast.error("Failed to load monthly collection");
+    } finally {
+      setLoadingMonth(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMonthlyCollection();
+  }, []);
+
+
+  // const [weeklyData, setWeeklyData] = useState([]);
+  // const [loadingWeek, setLoadingWeek] = useState(false);
+
+  // const fetchWeeklyCollection = async () => {
+  //   try {
+  //     setLoadingWeek(true);
+  //     const res = await BaseApi.get("/report/weekly-collection", {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     const data = res?.data?.data;
+  //     if (!data) throw new Error("No data found");
+
+  //     const combinedData = [...data.Organized, ...data.UnOrganized];
+
+  //     const weeklyTotals = {};
+
+  //     combinedData.forEach((item) => {
+  //       const date = new Date(item.date);
+  //       const weekStart = new Date(date);
+  //       weekStart.setDate(date.getDate() - date.getDay()); // Sunday as week start
+
+  //       const key = weekStart.toLocaleDateString("en-GB", {
+  //         day: "2-digit",
+  //         month: "short",
+  //         year: "numeric",
+  //       });
+
+  //       const amount = item.total_amount || 0;
+
+  //       if (weeklyTotals[key]) {
+  //         weeklyTotals[key] += amount;
+  //       } else {
+  //         weeklyTotals[key] = amount;
+  //       }
+  //     });
+
+  //     const formatted = Object.entries(weeklyTotals)
+  //       .map(([week, value]) => ({ week, value }))
+  //       .sort((a, b) => new Date(a.week) - new Date(b.week));
+
+  //     setWeeklyData(formatted);
+  //     toast.success("Weekly collection loaded");
+  //   } catch (err) {
+  //     console.error("Error loading weekly collection:", err);
+  //     toast.error("Failed to load weekly collection");
+  //   } finally {
+  //     setLoadingWeek(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchWeeklyCollection();
+  // }, []);
+
+  const [selectedMonth, setSelectedMonth] = useState(new Date())
+const [weeklyData, setWeeklyData] = useState([])
+const [loadingWeek, setLoadingWeek] = useState(false);
+
+
+  const fetchWeeklyCollection = async () => {
+  try {
+    setLoadingWeek(true);
+
+    const startDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1);
+    const endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0);
+
+    const res = await BaseApi.post(
+      "/report/weekly-collection",
+      {
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    const data = res?.data?.data;
+    if (!data) throw new Error("No data found");
+
+    const combinedData = [...data.Organized, ...data.UnOrganized];
+
+    // Build 5 week ranges (W-1 to W-5)
+    const weeks = Array.from({ length: 5 }, (_, i) => ({
+      week: `W-${i + 1}`,
+      value: 0,
+    }));
+
+    combinedData.forEach((item) => {
+      const date = new Date(item.date);
+      const amount = item.total_amount ?? 0;
+
+      if (
+        date >= startDate &&
+        date <= endDate &&
+        !isNaN(date.getTime())
+      ) {
+        const dayOfMonth = date.getDate();
+        const weekIndex = Math.min(Math.floor((dayOfMonth - 1) / 7), 4); // Maps to 0-4 → W-1 to W-5
+        weeks[weekIndex].value += amount;
+      }
+    });
+
+    setWeeklyData(weeks);
+  } catch (err) {
+    console.error("Error loading weekly collection:", err);
+    toast.error("Failed to load weekly collection");
+    setWeeklyData([
+      { week: "W-1", value: 0 },
+      { week: "W-2", value: 0 },
+      { week: "W-3", value: 0 },
+      { week: "W-4", value: 0 },
+      { week: "W-5", value: 0 },
+    ]);
+  } finally {
+    setLoadingWeek(false);
+  }
+};
+
+
+useEffect(() => {
+  fetchWeeklyCollection();
+}, [selectedMonth]);
+
+
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -720,7 +854,7 @@ const [yearlyData, setYearlyData] = useState([])
     Monthly: {
       title: "Monthly ARPU (Last 12 Months)",
       data: monthlyData,
-      total: monthlyData[monthlyData.length - 1].value,
+      total: monthlyData[monthlyData?.length - 1]?.value || 100,
       unit: "$",
       chart: (
         <ResponsiveContainer width="100%" height={265}>
@@ -897,45 +1031,45 @@ const [yearlyData, setYearlyData] = useState([])
 
             <div className="w-full flex flex-row flex-wrap gap-4 mx-5 my-5 ">
               {/* Yearly Collection Card */}
-            <div className="w-full md:w-[27%] bg-white shadow-lg rounded-md p-5">
-      <div className="flex items-center justify-between text-xl mb-2">
-        <div className="flex items-center">
-          <i className="mr-2">
-            {/* SVG ICON */}
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="9" fill="#665DD9" />
-              <path
-                d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
-                fill="white"
-                fillOpacity="0.92"
-              />
-            </svg>
-          </i>
-          Yearly Collection
-        </div>
-      </div>
+              <div className="w-full md:w-[27%] bg-white shadow-lg rounded-md p-5">
+                <div className="flex items-center justify-between text-xl mb-2">
+                  <div className="flex items-center">
+                    <i className="mr-2">
+                      {/* SVG ICON */}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="9" fill="#665DD9" />
+                        <path
+                          d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
+                          fill="white"
+                          fillOpacity="0.92"
+                        />
+                      </svg>
+                    </i>
+                    Yearly Collection
+                  </div>
+                </div>
 
-      <div className="flex justify-end my-2">
-        <div className="flex flex-col items-center">
-          <span className="text-[#095ea4] text-2xl font-bold">
-            ₹{yearlyData.length ? yearlyData[yearlyData.length - 1].value : 0}
-          </span>
-          <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
-        </div>
-      </div>
+                <div className="flex justify-end my-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      ₹{yearlyData.length ? yearlyData[yearlyData.length - 1].value : 0}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+                  </div>
+                </div>
 
-      <div className="w-full">
-        <ResponsiveContainer width="100%" height={265}>
-          <LineChart data={yearlyData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="value" stroke="#00BCD4" strokeWidth={3} dot={{ r: 5 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={265}>
+                    <LineChart data={yearlyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="year" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#00BCD4" strokeWidth={3} dot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
 
               {/* Monthly ARPU Card */}
               <div className="w-full md:w-[36%] bg-white shadow-lg rounded-md p-5">
@@ -959,14 +1093,17 @@ const [yearlyData, setYearlyData] = useState([])
                     </i>
                     Monthly Collection
                   </div>
-                  {/* <div className="text-sm">{new Date().toLocaleDateString()}</div> */}
                 </div>
+
                 <div className="flex justify-end my-2">
                   <div className="flex flex-col items-center">
-                    <span className="text-[#095ea4] text-2xl font-bold">₹{monthlyData[monthlyData.length - 1].value}</span>
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      ₹{monthlyData.length ? monthlyData[monthlyData.length - 1].value : 0}
+                    </span>
                     <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
                   </div>
                 </div>
+
                 <div className="w-full">
                   <ResponsiveContainer width="100%" height={265}>
                     <AreaChart data={monthlyData}>
@@ -974,56 +1111,73 @@ const [yearlyData, setYearlyData] = useState([])
                       <XAxis dataKey="month" interval={0} angle={-35} textAnchor="end" />
                       <YAxis />
                       <Tooltip />
-                      <Area type="monotone" dataKey="value" stroke="#0288D1" fill="#B3E5FC" strokeWidth={2} />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#0288D1"
+                        fill="#B3E5FC"
+                        strokeWidth={2}
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
+
               {/* Weekly Revenue Collection */}
-              <div className="w-full md:w-[30%] bg-white shadow-lg rounded-md p-5">
-                <div className="flex items-center justify-between text-xl mb-2">
-                  <div className="flex items-center">
-                    <i className="mr-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="32"
-                        height="32"
-                        viewBox="0 0 32 32"
-                        fill="none"
-                      >
-                        <rect width="32" height="32" rx="9" fill="#665DD9" />
-                        <path
-                          d="M19.6367 6C23.4494 6 25.84 8.37312 25.84 12.2033V14.5066L25.8331 14.6096C25.7828 14.9801 25.4652 15.2656 25.0809 15.2656H25.0722L24.9524 15.256C24.7948 15.2306 24.6484 15.1554 24.5354 15.0397C24.3942 14.8952 24.3172 14.6999 24.3219 14.4979V12.2033C24.3219 9.18452 22.6555 7.5181 19.6367 7.5181H12.2033C9.1758 7.5181 7.5181 9.18452 7.5181 12.2033V19.6455C7.5181 22.6642 9.18452 24.3219 12.2033 24.3219H19.6367C22.6642 24.3219 24.3219 22.6555 24.3219 19.6455C24.3219 19.2262 24.6617 18.8864 25.0809 18.8864C25.5002 18.8864 25.84 19.2262 25.84 19.6455C25.84 23.4669 23.4669 25.84 19.6455 25.84H12.2033C8.37312 25.84 6 23.4669 6 19.6455V12.2033C6 8.37312 8.37312 6 12.2033 6H19.6367ZM11.706 13.4945C11.9073 13.5014 12.0977 13.5879 12.2352 13.7352C12.3726 13.8825 12.4459 14.0784 12.4388 14.2798V20.6226C12.4244 21.0418 12.0728 21.37 11.6536 21.3555C11.2344 21.341 10.9063 20.9895 10.9207 20.5703V14.2187L10.9343 14.1C10.9647 13.9444 11.0439 13.8013 11.162 13.6924C11.3095 13.5564 11.5055 13.4851 11.706 13.4945ZM15.9549 10.5194C16.3741 10.5194 16.7139 10.8592 16.7139 11.2785V20.579C16.7139 20.9982 16.3741 21.338 15.9549 21.338C15.5357 21.338 15.1958 20.9982 15.1958 20.579V11.2785C15.1958 10.8592 15.5357 10.5194 15.9549 10.5194ZM20.1602 16.8448C20.5794 16.8448 20.9193 17.1847 20.9193 17.6039V20.5703C20.9193 20.9895 20.5794 21.3293 20.1602 21.3293C19.741 21.3293 19.4012 20.9895 19.4012 20.5703V17.6039C19.4012 17.1847 19.741 16.8448 20.1602 16.8448Z"
-                          fill="white"
-                          fillOpacity="0.92"
-                        />
-                      </svg>
-                    </i>
-                    Weekly Collection
-                  </div>
-                  {/* <div className="text-sm">{new Date().toLocaleDateString()}</div> */}
-                </div>
-                <div className="flex justify-end my-2">
-                  <div className="flex flex-col items-center">
-                    <span className="text-[#095ea4] text-2xl font-bold">
-                      ₹{weeklyData.reduce((acc, d) => acc + d.value, 0)}
-                    </span>
-                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
-                  </div>
-                </div>
-                <div className="w-full">
-                  <ResponsiveContainer width="100%" height={265}>
-                    <BarChart data={weeklyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="week" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="value" fill="#03A9F4" barSize={25} radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+          <div className="w-full md:w-[30%] bg-white shadow-lg rounded-md p-5">
+  {/* Title Section */}
+  <div className="flex items-center justify-between text-xl mb-2">
+    <div className="flex items-center">
+      <i className="mr-2">
+        {/* Your SVG icon here */}
+      </i>
+      Weekly Collection
+    </div>
+  </div>
+
+  {/* Calendar Input */}
+  <div className="mb-4">
+    <input
+      type="month"
+      className="border px-2 py-1 rounded"
+      value={selectedMonth.toISOString().slice(0, 7)}
+      onChange={(e) => setSelectedMonth(new Date(e.target.value))}
+    />
+  </div>
+
+  {/* Total Display */}
+  <div className="flex justify-end my-2">
+    <div className="flex flex-col items-center">
+      <span className="text-[#095ea4] text-2xl font-bold">
+        ₹{weeklyData?.reduce((acc, d) => acc + (d?.value ?? 0), 0)}
+      </span>
+      <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+    </div>
+  </div>
+
+  {/* Chart */}
+  <div className="w-full">
+    <ResponsiveContainer width="100%" height={265}>
+      <BarChart data={weeklyData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="week" />
+        <YAxis />
+        <Tooltip />
+        <Bar
+          dataKey="value"
+          fill="#03A9F4"
+          barSize={25}
+          radius={[4, 4, 0, 0]}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+</div>
+
+
+
+
             </div>
 
 
