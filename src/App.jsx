@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+// import { BrowserRouter as Router } from "react-router-dom";
+// import Cookies from "js-cookie";
 import AppRoutes from "./Routes/AppRoutes";
 import img from "./assets/loader.json";
 import Lottie from "lottie-react";
+// import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogActions,
@@ -14,6 +15,7 @@ import {
 } from "@mui/material";
 import useModulePermission from "./Components/Hooks/useModulePermission";
 import { UseServiceCheck } from "./Components/Hooks/UseServiceCheck";
+import AutoLogout from "./Components/utils/AutoLogout";
 
 function App() {
   useModulePermission();
@@ -61,9 +63,10 @@ function App() {
 
   return (
     <>
-      {/* <Router basename="/parking"> */}
-        <AppRoutes access_token={accessToken} userType={userType} />
-      {/* </Router> */}
+   
+       <AutoLogout>
+      <AppRoutes access_token={accessToken} userType={userType} />
+    </AutoLogout>
       <Dialog
         open={open}
         onClose={handleClose}

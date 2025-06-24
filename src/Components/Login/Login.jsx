@@ -8,6 +8,7 @@ import createApiInstance from "../../AxiosInstance";
 import axios from "axios";
 import ApiHeader from "../api/ApiHeader";
 import ProjectApiList from "../api/ProjectApiList";
+import CryptoJS from "crypto-js";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState();
@@ -32,12 +33,31 @@ const Login = () => {
     password: Yup.string().required("Password is required"),
   });
 
+  function encryptPassword(plainPassword) {
+  const secretKey = "c2ec6f788fb85720bf48c8cc7c2db572596c585a15df18583e1234f147b1c2897aad12e7bebbc4c03c765d0e878427ba6370439d38f39340d7e";
+
+  const key = CryptoJS.enc.Latin1.parse(
+    CryptoJS.SHA256(secretKey).toString(CryptoJS.enc.Latin1)
+  );
+
+  const ivString = CryptoJS.SHA256(secretKey).toString().substring(0, 16);
+  const iv = CryptoJS.enc.Latin1.parse(ivString);
+
+  const encrypted = CryptoJS.AES.encrypt(plainPassword, key, {
+    iv: iv,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+
+  return CryptoJS.enc.Base64.stringify(encrypted.ciphertext);
+}
+
   const handleLogin = async (values) => {
     try {
-      setLoading(true); 
+      setLoading(true);
       const res = await Authapi.post("/login", {
         email: values.user_id,
-        password: values.password,
+        password: encryptPassword(values.password),
         type: window.ReactNativeWebView ? "mobile" : null,
         moduleId: 19,
         //type: "mobile",
@@ -56,6 +76,7 @@ const Login = () => {
         localStorage.setItem("userType", userDetails.user_type);
         localStorage.setItem("userName", userDetails.user_name);
         localStorage.setItem("device", deviceType);
+        localStorage.setItem("name", userDetails?.name);
         // localStorage.setItem("ulbId", userDetails.ulb_id);
         localStorage.setItem("userUlbName", userDetails.ulbName);
         localStorage.setItem("roles", JSON.stringify(userDetails.role));
@@ -63,11 +84,24 @@ const Login = () => {
         localStorage.setItem("userEmail", userDetails.email);
         localStorage.setItem("ulbIduserMobile", userDetails.mobile);
 
-        if (userDetails.user_type === "Admin") {
+        // if (userDetails.user_type === "Admin") {
+        //   window.location.replace("/parking/dashboard");
+        // } else if (userDetails.user_type === "Employee") {
+        //   localStorage.setItem("InchargeId", userDetails.emp_id);
+        //   window.location.replace("/parking/In_Charge");
+        // } else if (userDetails.user_type === "Accountant") {
+        //   window.location.replace("/parking/accountant");
+        // } else {
+        //   window.location.replace("/");
+        // }
+
+        if (userDetails.user_type === "Employee") {
           window.location.replace("/parking/dashboard");
-        } else if (userDetails.user_type === "Employee") {
-          localStorage.setItem("InchargeId", userDetails.emp_id);
-          window.location.replace("/parking/In_Charge");
+        } else if (userDetails.user_type === "Admin") {
+          // localStorage.setItem("InchargeId", userDetails.emp_id);
+          window.location.replace("/parking/dashboard");
+        } else if (userDetails.user_type === "Accountant") {
+          window.location.replace("/parking/accountant");
         } else {
           window.location.replace("/");
         }
@@ -148,6 +182,10 @@ const Login = () => {
                     className="flex flex-1  border rounded-md px-3 py-4 w-full focus:outline-none focus:border-blue-500"
                     error={touched.user_id && !!errors.user_id}
                     helperText={touched.user_id && errors.user_id}
+                    autoComplete="new-Username"
+                    onCopy={(e) => e.preventDefault()}
+                    onPaste={(e) => e.preventDefault()}
+                    onCut={(e) => e.preventDefault()}
                   />
                 </div>
                 <Field
@@ -158,6 +196,10 @@ const Login = () => {
                   fullWidth
                   error={touched.password && !!errors.password}
                   helperText={touched.password && errors.password}
+                  autoComplete="new-password"
+                    onCopy={(e) => e.preventDefault()}
+                    onPaste={(e) => e.preventDefault()}
+                    onCut={(e) => e.preventDefault()}
                 />
               </div>
               <div className="my-4">
