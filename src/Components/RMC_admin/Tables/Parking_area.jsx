@@ -63,6 +63,7 @@ const thead = [
   { name: "Parking Rate" },
   { name: "Parking Capacity" },
   { name: "Agreement Document" },
+  { name: "Status" },
   { name: "Actions" },
 ];
 
@@ -229,6 +230,50 @@ export default function ParkingArea({ location }) {
       });
   };
 
+  const handleStatusToggle = (parkingAreaId, currentStatus) => {
+  const updatedStatus = currentStatus === 1 ? 0 : 1;
+
+  set_loading(true); // show loading indicator
+
+  axios
+    .post(
+      `${process.env.REACT_APP_BASE_URL}/parking-area/update-status`,
+      {
+        id: parkingAreaId,
+        status: updatedStatus,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    .then((response) => {
+      if (response.data?.data) {
+        toast.success(
+          updatedStatus === 1
+            ? "Parking area activated successfully"
+            : "Parking area deactivated successfully"
+        );
+
+        // ✅ Refresh the table data
+        dataFetch(page, rowsPerPage);
+      } else {
+        toast.error("Something went wrong while updating status");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      toast.error("Failed to update parking area status");
+    })
+    .finally(() => {
+      set_loading(false); // stop loading
+    });
+};
+
+
+
+
   // console.log("Data to be mapped: ", data);
   // console.log("Filter Area", filteredArea);
 
@@ -317,7 +362,7 @@ export default function ParkingArea({ location }) {
                     <TableCell>{row.address}</TableCell>
                     <TableCell>{row.landmark}</TableCell>
                     <TableCell>{row.type_parking_space}</TableCell>
-                    <TableCell>{row.sub_type_parking_space == null ? "N/A": row.sub_type_parking_space}</TableCell>
+                    <TableCell>{row.sub_type_parking_space == null ? "N/A" : row.sub_type_parking_space}</TableCell>
                     <TableCell>{row.zip_code}</TableCell>
                     <TableCell>
                       <div className="flex flex-1 justify-start items-start flex-row gap-4">
@@ -432,6 +477,26 @@ export default function ParkingArea({ location }) {
                       )}
                     </TableCell>
                     <TableCell>
+                      <div className="flex items-center gap-2">
+                        {row?.status === 1 ? (
+                          <div
+                            className="text-green-500 text-xs p-2 bg-green-100 w-fit font-bold rounded-md cursor-pointer"
+                            onClick={() => handleStatusToggle(row.id, 1)} // 1 = active
+                          >
+                            Active
+                          </div>
+                        ) : (
+                          <div
+                            className="text-red-500 text-xs p-2 bg-red-200 w-fit font-bold rounded-md cursor-pointer"
+                            onClick={() => handleStatusToggle(row.id, 0)} // 0 = inactive
+                          >
+                            Inactive
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
                       <div style={styles.actionButtons}>
                         <div className="flex flex-row gap-4">
                           <div
@@ -514,6 +579,7 @@ export default function ParkingArea({ location }) {
           </Button>
         </DialogActions>
       </Dialog>
+      <Toaster position="top-right" reverseOrder={false} />
     </>
   );
 }
