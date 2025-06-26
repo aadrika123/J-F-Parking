@@ -215,6 +215,7 @@ export default function Parking_Incharge() {
         }
       )
       .then((response) => {
+       
         if (response.data.data.id === deleteId) {
           fetchData(page, rowsPerPage);
           handleClose();
@@ -244,6 +245,41 @@ export default function Parking_Incharge() {
     setPage(0); // Reset page to 0 when changing rowsPerPage
     fetchData(0, newRowsPerPage);
   };
+
+
+  // fucntion for making the unapproved to approve 
+
+  const handleappve =(incharge_id,status)=>{
+    console.log("incharge_id",incharge_id,status)
+    
+    setLoadingDelete(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/update-parking-incharge?id=${incharge_id}`,
+        { is_approved: status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        if (response.data.data) {
+          fetchData(page, rowsPerPage);
+          setLoadingDelete(false);
+          toast.success(response.data.message)
+        } else {
+          toast.error("Something went wrong");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Failed to delete");
+      });
+
+
+
+  }
 
   return (
     <div className="flex flex-1 flex-col ">
@@ -362,20 +398,20 @@ export default function Parking_Incharge() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => handleApprovalToggle(incharge.id)}
-                        className={`px-3 py-1 rounded text-xs font-bold transition-all duration-200 ${
-                          incharge.is_approved === false
-                            ? "bg-red-200 text-red-600 hover:bg-red-300"
-                            : "bg-green-100 text-green-700 hover:bg-green-200"
-                        }`}
-                      >
-                        {incharge.is_approved === false
-                          ? "Not Approved"
-                          : "Approved"}
-                      </button>
-                    </TableCell>
+                   <TableCell>
+                 <div className="flex items-center gap-2">
+                {incharge.is_approved ? (
+                       <div className="text-green-500 text-xs p-2 bg-green-100 w-fit font-bold rounded-md cursor-pointer" onClick={() => handleappve(incharge.id,false)}>
+                      Approved
+                     </div>
+                    ) : (
+                    <div className="text-red-500 p-2 text-xs bg-red-200 w-fit font-bold rounded-md cursor-pointer" onClick={() => handleappve(incharge.id,true)}
+>
+                      Un-Approved
+                     </div>
+                      )}
+                    </div>
+                  </TableCell>
                     <TableCell>
                       <div className="flex flex-1 flex-row">
                         <Button onClick={() => handleClickOpen(incharge.id)}>
