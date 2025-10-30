@@ -8,6 +8,7 @@ import ApiHeader from "../api/ApiHeader";
 import ProjectApiList from "../api/ProjectApiList";
 import CryptoJS from "crypto-js";
 import UseCaptchaGenerator from "../Hooks/UseCaptchaGenerator";
+import useSystemUniqueID from "../Hooks/UseSystemUniqueId";
 
 const Login = () => {
   const [userId, setUserId] = useState("");
@@ -20,10 +21,12 @@ const Login = () => {
   const {
     captchaInputField,
     captchaImage,
-    verifyCaptcha,
     generateRandomCaptcha,
+    getCaptchaData,
+    getEncryptedCaptcha,
   } = UseCaptchaGenerator();
 
+  const { fingerprint } = useSystemUniqueID();
   const Authapi = createApiInstance("auth");
   const { getMenuByModule } = ProjectApiList();
 
@@ -55,19 +58,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+    const captchaData = getCaptchaData();
 
     // Basic validation
     if (!userId.trim() || !password.trim() || !captcha.trim()) {
       setErrorMsg("All fields are required");
-      return;
-    }
-
-    const isValidCaptcha = verifyCaptcha(captcha);
-    if (!isValidCaptcha) {
-      setErrorMsg("Invalid captcha");
-      setUserId("");
-      setPassword("");
-      setCaptcha("");
       return;
     }
 
@@ -76,8 +71,10 @@ const Login = () => {
       const res = await Authapi.post("/login", {
         email: userId,
         password: encryptPassword(password),
-        type: window.ReactNativeWebView ? "mobile" : null,
         moduleId: 19,
+        captcha_code: getEncryptedCaptcha(captcha),
+        captcha_id: captchaData.captcha_id,
+        systemUniqueId: fingerprint,
       });
 
       fetchMenuList();
