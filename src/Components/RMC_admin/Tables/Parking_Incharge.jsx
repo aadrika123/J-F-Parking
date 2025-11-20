@@ -249,6 +249,11 @@ export default function Parking_Incharge() {
 
   // fucntion for making the unapproved to approve 
 
+  const formatEmail = (email) => {
+    if (!email) return "";
+    return email.replace(/@/g, "[at]").replace(/\./g, "[dot]");
+  };
+
   const handleappve =(incharge_id,status)=>{
     console.log("incharge_id",incharge_id,status)
     
@@ -369,7 +374,7 @@ export default function Parking_Incharge() {
                         incharge.middle_name || ""
                       } ${incharge.last_name || ""}`}
                     </TableCell>
-                    <TableCell>{incharge.email_id}</TableCell>
+                    <TableCell>{formatEmail(incharge.email_id)}</TableCell>
                     <TableCell>{incharge.address}</TableCell>
                     <TableCell>{incharge.cunique_id}</TableCell>
                     <TableCell>
