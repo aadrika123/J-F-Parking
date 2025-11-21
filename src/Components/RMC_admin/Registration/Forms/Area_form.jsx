@@ -233,7 +233,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="two_wheeler_capacity"
                     name="two_wheeler_capacity"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -261,7 +261,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="total_parking_area"
                     name="total_parking_area"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -407,7 +407,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="four_wheeler_capacity"
                     name="four_wheeler_capacity"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -438,7 +438,7 @@ export default function Area_form() {
                     </label>
 
                     <Field
-                      type="text"
+                      type="number"
                       id="two_wheeler_rate"
                       name="two_wheeler_rate"
                       className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -467,7 +467,7 @@ export default function Area_form() {
                       <span className="text-red-500">*</span>
                     </label>
                     <Field
-                      type="text"
+                      type="number"
                       id="four_wheeler_rate"
                       name="four_wheeler_rate"
                       className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
