@@ -10,6 +10,8 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import { customInputValidation } from "../../../utils/customInputValidation";
+import { validateFileUpload } from "../../../utils/fileValidation";
 
 import axios from "axios";
 
@@ -230,15 +232,8 @@ export default function Incharge_form() {
                         className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                         style={{ boxShadow: "0 1px 4px #fff" }}
                         maxLength={30}
-                        onKeyPress={(e) => {
-                          if (
-                            !(
-                              (e.key >= "a" && e.key <= "z") ||
-                              (e.key >= "A" && e.key <= "Z")
-                            )
-                          ) {
-                            e.preventDefault();
-                          }
+                        onInput={(e) => {
+                          customInputValidation(e, ['removeSpecialCharacter', 'alphabets'])
                         }}
                         onFocus={(e) =>
                           (e.target.style.boxShadow = "0 1px 4px #000")
@@ -264,15 +259,8 @@ export default function Incharge_form() {
                         className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                         style={{ boxShadow: "0 1px 4px #fff" }}
                         maxLength={30}
-                        onKeyPress={(e) => {
-                          if (
-                            !(
-                              (e.key >= "a" && e.key <= "z") ||
-                              (e.key >= "A" && e.key <= "Z")
-                            )
-                          ) {
-                            e.preventDefault();
-                          }
+                        onInput={(e) => {
+                          customInputValidation(e, ['removeSpecialCharacter', 'alphabets'])
                         }}
                         onFocus={(e) =>
                           (e.target.style.boxShadow = "0 1px 4px #000")
@@ -299,6 +287,9 @@ export default function Incharge_form() {
                         className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                         style={{ boxShadow: "0 1px 4px #fff" }}
                         maxLength={30}
+                        onInput={(e) => {
+                          customInputValidation(e, ['removeSpecialCharacter', 'alphabets'])
+                        }}
                         onFocus={(e) =>
                           (e.target.style.boxShadow = "0 1px 4px #000")
                         }
@@ -328,13 +319,16 @@ export default function Incharge_form() {
                       onFocus={(e) =>
                         (e.target.style.boxShadow = "0 1px 4px #000")
                       }
+                      onInput={(e) => {     
+                        customInputValidation(e, ['removeSpecialCharacter','number'])
+                      }}
                       onBlur={(e) => (e.target.style.boxShadow = "none")}
                       maxLength={2}
-                      onKeyPress={(e) => {
-                        if (!(e.key >= "0" && e.key <= "9")) {
-                          e.preventDefault();
-                        }
-                      }}
+                      // onKeyPress={(e) => {
+                      //   if (!(e.key >= "0" && e.key <= "9")) {
+                      //     e.preventDefault();
+                      //   }
+                      // }}
                     />
                     <ErrorMessage
                       name="Age"
@@ -391,25 +385,29 @@ export default function Incharge_form() {
                     type="file"
                     id="Fitness_Certificate_selectedFile"
                     name="Fitness_Certificate_selectedFile"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     onFocus={(e) =>
                       (e.target.style.boxShadow = "0 1px 4px #000")
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
-                    onChange={(event) => {
-                      setFieldValue(
-                        "Fitness_Certificate_selectedFile",
-                        event.target.files[0]
-                      );
+                    onChange={async (event) => {
+                      const file = event.target.files[0];
+                      if (file) {
+                        const isValid = await validateFileUpload(file, {
+                          maxSize: 2 * 1024 * 1024,
+                          allowedTypes: ['image/*'],
+                          checkMalicious: true
+                        });
 
-                      handle_Image_upload(
-                        event.target.files[0],
-                        "Fitness_Certificate",
-                        setUploadedFiles,
-                        setUploading
-                      );
+                        if (isValid) {
+                          setFieldValue("Fitness_Certificate_selectedFile", file);
+                          handle_Image_upload(file, "Fitness_Certificate", setUploadedFiles, setUploading);
+                        } else {
+                          event.target.value = '';
+                        }
+                      }
                     }}
                   />
                   <ErrorMessage
@@ -447,22 +445,29 @@ export default function Incharge_form() {
                     type="file"
                     id="KYC_selectedFile"
                     name="KYC_selectedFile"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     onFocus={(e) =>
                       (e.target.style.boxShadow = "0 1px 4px #000")
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
-                    onChange={(event) => {
-                      setFieldValue("KYC_selectedFile", event.target.files[0]);
+                    onChange={async (event) => {
+                      const file = event.target.files[0];
+                      if (file) {
+                        const isValid = await validateFileUpload(file, {
+                          maxSize: 2 * 1024 * 1024,
+                          allowedTypes: ['image/*'],
+                          checkMalicious: true
+                        });
 
-                      handle_Image_upload(
-                        event.target.files[0],
-                        "KYC_File",
-                        setUploadedFiles,
-                        setUploading
-                      );
+                        if (isValid) {
+                          setFieldValue("KYC_selectedFile", file);
+                          handle_Image_upload(file, "KYC_File", setUploadedFiles, setUploading);
+                        } else {
+                          event.target.value = '';
+                        }
+                      }
                     }}
                   />
                   <ErrorMessage
@@ -499,17 +504,15 @@ export default function Incharge_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="Contact_Number"
                     name="Contact_Number"
                     placeholder="+91 "
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     maxLength={10}
-                    onKeyPress={(e) => {
-                      if (!(e.key >= "0" && e.key <= "9")) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                     onFocus={(e) =>
                       (e.target.style.boxShadow = "0 1px 4px #000")
@@ -535,11 +538,8 @@ export default function Incharge_form() {
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     maxLength={100}
-                    onKeyPress={(e) => {
-                      const regex = /^[a-zA-Z0-9 ]$/; // allow only alphanumeric + space
-                      if (!regex.test(e.key)) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'alphanumeric'])
                     }}
                     onFocus={(e) => (e.target.style.boxShadow = "0 1px 4px #000")}
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
@@ -563,10 +563,8 @@ export default function Incharge_form() {
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     maxLength={6}
-                    onKeyPress={(e) => {
-                      if (!(e.key >= "0" && e.key <= "9")) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                     onFocus={(e) =>
                       (e.target.style.boxShadow = "0 1px 4px #000")
@@ -597,14 +595,8 @@ export default function Incharge_form() {
                       (e.target.style.boxShadow = "0 1px 4px #000")
                     }
                     maxLength={10}
-                    onKeyPress={(e) => {
-                      if (
-                        !(e.key >= "0" && e.key <= "9") ||
-                        (e.key >= "a" && e.key <= "z") ||
-                        (e.key >= "A" && e.key <= "Z")
-                      ) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                   />
@@ -626,11 +618,8 @@ export default function Incharge_form() {
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     maxLength={80}
-                    onKeyPress={(e) => {
-                      const allowed = /^[a-zA-Z0-9@._-]$/;
-                      if (!allowed.test(e.key)) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['email'])
                     }}
                     onFocus={(e) => (e.target.style.boxShadow = "0 1px 4px #000")}
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
