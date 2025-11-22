@@ -133,7 +133,7 @@ export default function Incharge_form() {
           "/onboard-parking-incharge",
           formData
         );
-    
+
         const status = response?.data?.status;
         const errorStatus = response?.data?.error?.status;
         if (status == true) {
@@ -536,21 +536,12 @@ export default function Incharge_form() {
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     maxLength={100}
                     onKeyPress={(e) => {
-                      if (
-                        !(
-                          e.key <= "a" ||
-                          e.key <= "z" ||
-                          e.key <= "A" ||
-                          e.key <= "Z" ||
-                          (e.key = "")
-                        )
-                      ) {
+                      const regex = /^[a-zA-Z0-9 ]$/; // allow only alphanumeric + space
+                      if (!regex.test(e.key)) {
                         e.preventDefault();
                       }
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.boxShadow = "0 1px 4px #000")
-                    }
+                    onFocus={(e) => (e.target.style.boxShadow = "0 1px 4px #000")}
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                   />
                   <ErrorMessage
@@ -635,9 +626,13 @@ export default function Incharge_form() {
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     maxLength={80}
-                    onFocus={(e) =>
-                      (e.target.style.boxShadow = "0 1px 4px #000")
-                    }
+                    onKeyPress={(e) => {
+                      const allowed = /^[a-zA-Z0-9@._-]$/;
+                      if (!allowed.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onFocus={(e) => (e.target.style.boxShadow = "0 1px 4px #000")}
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                   />
                   <ErrorMessage

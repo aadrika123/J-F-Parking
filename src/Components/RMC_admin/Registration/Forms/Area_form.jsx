@@ -186,15 +186,8 @@ export default function Area_form() {
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={100}
                     onKeyPress={(e) => {
-                      if (
-                        !(
-                          e.key <= "a" ||
-                          e.key <= "z" ||
-                          e.key <= "A" ||
-                          e.key <= "Z" ||
-                          (e.key = "")
-                        )
-                      ) {
+                      const regex = /^[a-zA-Z0-9 ]*$/;
+                      if (!regex.test(e.key)) {
                         e.preventDefault();
                       }
                     }}
@@ -222,15 +215,8 @@ export default function Area_form() {
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={30}
                     onKeyPress={(e) => {
-                      if (
-                        !(
-                          e.key <= "a" ||
-                          e.key <= "z" ||
-                          e.key <= "A" ||
-                          e.key <= "Z" ||
-                          (e.key = "")
-                        )
-                      ) {
+                      const regex = /^[a-zA-Z0-9 ]*$/;
+                      if (!regex.test(e.key)) {
                         e.preventDefault();
                       }
                     }}
@@ -247,7 +233,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="two_wheeler_capacity"
                     name="two_wheeler_capacity"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -275,7 +261,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="total_parking_area"
                     name="total_parking_area"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -403,15 +389,8 @@ export default function Area_form() {
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={100}
                     onKeyPress={(e) => {
-                      if (
-                        !(
-                          e.key <= "a" ||
-                          e.key <= "z" ||
-                          e.key <= "A" ||
-                          e.key <= "Z" ||
-                          (e.key = "")
-                        )
-                      ) {
+                      const regex = /^[a-zA-Z0-9 ]*$/;
+                      if (!regex.test(e.key)) {
                         e.preventDefault();
                       }
                     }}
@@ -428,7 +407,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="text"
+                    type="number"
                     id="four_wheeler_capacity"
                     name="four_wheeler_capacity"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -459,7 +438,7 @@ export default function Area_form() {
                     </label>
 
                     <Field
-                      type="text"
+                      type="number"
                       id="two_wheeler_rate"
                       name="two_wheeler_rate"
                       className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -488,7 +467,7 @@ export default function Area_form() {
                       <span className="text-red-500">*</span>
                     </label>
                     <Field
-                      type="text"
+                      type="number"
                       id="four_wheeler_rate"
                       name="four_wheeler_rate"
                       className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -524,7 +503,7 @@ export default function Area_form() {
                     type="file"
                     id="agreement_doc_selected_file"
                     name="agreement_doc_selected_file"
-                    accept="image/*"
+                    accept="image/*,.pdf"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     onFocus={(e) =>

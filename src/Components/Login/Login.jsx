@@ -104,6 +104,8 @@ const Login = () => {
     } catch (error) {
       console.error(error);
       setErrorMsg("Something went wrong!");
+      generateRandomCaptcha();
+      setCaptcha("");
     } finally {
       setLoading(false);
     }
