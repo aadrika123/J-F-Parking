@@ -23,6 +23,7 @@ import toast, { Toaster } from "react-hot-toast";
 import createApiInstance from "../../../AxiosInstance";
 import autoTable from "jspdf-autotable";
 import { jsPDF } from "jspdf";
+import DocumentModal from "../../utils/DocumentModal";
 
 const handleDownload = () => {
   const doc = new jsPDF();
@@ -99,6 +100,9 @@ export default function ParkingArea({ location }) {
   const [delete_id, set_delete_id] = useState("");
   const [loadingdelete, set_loadingdelete] = useState(false);
   const [loading, set_loading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState("");
+  const [modalTitle, setModalTitle] = useState("");
 
   const errorhandleClickOpen = (id) => {
     set_delete_id(id);
@@ -467,8 +471,13 @@ export default function ParkingArea({ location }) {
                     <TableCell>
                       {row?.agreement_doc_url ? (
                         <img
-                          className="w-20 h-20"
+                          className="w-20 h-20 cursor-pointer hover:opacity-80"
                           src={row?.agreement_doc_url}
+                          onClick={() => {
+                            setModalImage(row?.agreement_doc_url);
+                            setModalTitle("Agreement Document");
+                            setModalOpen(true);
+                          }}
                         />
                       ) : (
                         <div className="text-red-500 p-4 bg-red-200 w-fit font-bold rounded-md">
@@ -579,6 +588,14 @@ export default function ParkingArea({ location }) {
           </Button>
         </DialogActions>
       </Dialog>
+      
+      <DocumentModal 
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        imageUrl={modalImage}
+        title={modalTitle}
+      />
+      
       <Toaster position="top-right" reverseOrder={false} />
     </>
   );

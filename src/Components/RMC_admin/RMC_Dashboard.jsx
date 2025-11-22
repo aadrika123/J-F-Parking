@@ -220,77 +220,77 @@ export default function RMC_Dashboard() {
   }, []);
 
 
- 
+
 
   const [selectedMonth, setSelectedMonth] = useState(new Date())
-const [weeklyData, setWeeklyData] = useState([])
-const [loadingWeek, setLoadingWeek] = useState(false);
+  const [weeklyData, setWeeklyData] = useState([])
+  const [loadingWeek, setLoadingWeek] = useState(false);
 
 
   const fetchWeeklyCollection = async () => {
-  try {
-    setLoadingWeek(true);
+    try {
+      setLoadingWeek(true);
 
-    const startDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1);
-    const endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0);
+      const startDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1);
+      const endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0);
 
-    const res = await BaseApi.post(
-      "/report/weekly-collection",
-      {
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+      const res = await BaseApi.post(
+        "/report/weekly-collection",
+        {
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    const data = res?.data?.data;
-    if (!data) throw new Error("No data found");
+      const data = res?.data?.data;
+      if (!data) throw new Error("No data found");
 
-    const combinedData = [...data.Organized, ...data.UnOrganized];
+      const combinedData = [...data.Organized, ...data.UnOrganized];
 
-    // Build 5 week ranges (W-1 to W-5)
-    const weeks = Array.from({ length: 5 }, (_, i) => ({
-      week: `W-${i + 1}`,
-      value: 0,
-    }));
+      // Build 5 week ranges (W-1 to W-5)
+      const weeks = Array.from({ length: 5 }, (_, i) => ({
+        week: `W-${i + 1}`,
+        value: 0,
+      }));
 
-    combinedData.forEach((item) => {
-      const date = new Date(item.date);
-      const amount = item.total_amount ?? 0;
+      combinedData.forEach((item) => {
+        const date = new Date(item.date);
+        const amount = item.total_amount ?? 0;
 
-      if (
-        date >= startDate &&
-        date <= endDate &&
-        !isNaN(date.getTime())
-      ) {
-        const dayOfMonth = date.getDate();
-        const weekIndex = Math.min(Math.floor((dayOfMonth - 1) / 7), 4); // Maps to 0-4 → W-1 to W-5
-        weeks[weekIndex].value += amount;
-      }
-    });
+        if (
+          date >= startDate &&
+          date <= endDate &&
+          !isNaN(date.getTime())
+        ) {
+          const dayOfMonth = date.getDate();
+          const weekIndex = Math.min(Math.floor((dayOfMonth - 1) / 7), 4); // Maps to 0-4 → W-1 to W-5
+          weeks[weekIndex].value += amount;
+        }
+      });
 
-    setWeeklyData(weeks);
-  } catch (err) {
-    console.error("Error loading weekly collection:", err);
-    toast.error("Failed to load weekly collection");
-    setWeeklyData([
-      { week: "W-1", value: 0 },
-      { week: "W-2", value: 0 },
-      { week: "W-3", value: 0 },
-      { week: "W-4", value: 0 },
-      { week: "W-5", value: 0 },
-    ]);
-  } finally {
-    setLoadingWeek(false);
-  }
-};
+      setWeeklyData(weeks);
+    } catch (err) {
+      console.error("Error loading weekly collection:", err);
+      toast.error("Failed to load weekly collection");
+      setWeeklyData([
+        { week: "W-1", value: 0 },
+        { week: "W-2", value: 0 },
+        { week: "W-3", value: 0 },
+        { week: "W-4", value: 0 },
+        { week: "W-5", value: 0 },
+      ]);
+    } finally {
+      setLoadingWeek(false);
+    }
+  };
 
 
-useEffect(() => {
-  fetchWeeklyCollection();
-}, [selectedMonth]);
+  useEffect(() => {
+    fetchWeeklyCollection();
+  }, [selectedMonth]);
 
 
 
@@ -1072,55 +1072,55 @@ useEffect(() => {
 
 
               {/* Weekly Revenue Collection */}
-          <div className="w-full md:w-[30%] bg-white shadow-lg rounded-md p-5">
-  {/* Title Section */}
-  <div className="flex items-center justify-between text-xl mb-2">
-    <div className="flex items-center">
-      <i className="mr-2">
-        {/* Your SVG icon here */}
-      </i>
-      Weekly Collection
-    </div>
-  </div>
+              <div className="w-full md:w-[30%] bg-white shadow-lg rounded-md p-5">
+                {/* Title Section */}
+                <div className="flex items-center justify-between text-xl mb-2">
+                  <div className="flex items-center">
+                    <i className="mr-2">
+                      {/* Your SVG icon here */}
+                    </i>
+                    Weekly Collection
+                  </div>
+                </div>
 
-  {/* Calendar Input */}
-  <div className="mb-4">
-    <input
-      type="month"
-      className="border px-2 py-1 rounded"
-      value={selectedMonth.toISOString().slice(0, 7)}
-      onChange={(e) => setSelectedMonth(new Date(e.target.value))}
-    />
-  </div>
+                {/* Calendar Input */}
+                <div className="mb-4">
+                  <input
+                    type="month"
+                    className="border px-2 py-1 rounded"
+                    value={selectedMonth.toISOString().slice(0, 7)}
+                    onChange={(e) => setSelectedMonth(new Date(e.target.value))}
+                  />
+                </div>
 
-  {/* Total Display */}
-  <div className="flex justify-end my-2">
-    <div className="flex flex-col items-center">
-      <span className="text-[#095ea4] text-2xl font-bold">
-        ₹{weeklyData?.reduce((acc, d) => acc + (d?.value ?? 0), 0)}
-      </span>
-      <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
-    </div>
-  </div>
+                {/* Total Display */}
+                <div className="flex justify-end my-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[#095ea4] text-2xl font-bold">
+                      ₹{weeklyData?.reduce((acc, d) => acc + (d?.value ?? 0), 0)}
+                    </span>
+                    <h4 className="text-center text-xs whitespace-nowrap">Total Amount</h4>
+                  </div>
+                </div>
 
-  {/* Chart */}
-  <div className="w-full">
-    <ResponsiveContainer width="100%" height={265}>
-      <BarChart data={weeklyData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="week" />
-        <YAxis />
-        <Tooltip />
-        <Bar
-          dataKey="value"
-          fill="#03A9F4"
-          barSize={25}
-          radius={[4, 4, 0, 0]}
-        />
-      </BarChart>
-    </ResponsiveContainer>
-  </div>
-</div>
+                {/* Chart */}
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={265}>
+                    <BarChart data={weeklyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="week" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar
+                        dataKey="value"
+                        fill="#03A9F4"
+                        barSize={25}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
 
 
 

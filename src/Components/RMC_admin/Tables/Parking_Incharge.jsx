@@ -20,6 +20,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import toast, { Toaster } from "react-hot-toast";
+import DocumentModal from "../../utils/DocumentModal";
 
 import autoTable from "jspdf-autotable";
 import { jsPDF } from "jspdf";
@@ -63,6 +64,9 @@ export default function Parking_Incharge() {
   const [tableData, setTableData] = useState("");
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loading, set_loading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState("");
+  const [modalTitle, setModalTitle] = useState("");
 
   const thead = [
     { name: "S.N" },
@@ -380,9 +384,14 @@ export default function Parking_Incharge() {
                     <TableCell>
                       {incharge.fitnessDocUrl ? (
                         <img
-                          className="w-20 h-20"
+                          className="w-20 h-20 cursor-pointer hover:opacity-80"
                           src={incharge.fitnessDocUrl}
                           alt="Fitness Doc"
+                          onClick={() => {
+                            setModalImage(incharge.fitnessDocUrl);
+                            setModalTitle("Fitness Certificate");
+                            setModalOpen(true);
+                          }}
                         />
                       ) : (
                         <div className="text-red-500 p-2 text-xs bg-red-200 w-fit font-bold rounded-md">
@@ -393,9 +402,14 @@ export default function Parking_Incharge() {
                     <TableCell>
                       {incharge.kycDocUrl ? (
                         <img
-                          className="w-20 h-20"
+                          className="w-20 h-20 cursor-pointer hover:opacity-80"
                           src={incharge.kycDocUrl}
                           alt="KYC Doc"
+                          onClick={() => {
+                            setModalImage(incharge.kycDocUrl);
+                            setModalTitle("KYC Document");
+                            setModalOpen(true);
+                          }}
                         />
                       ) : (
                         <div className="text-red-500 text-xs p-2 bg-red-200 w-fit font-bold rounded-md">
@@ -469,6 +483,13 @@ export default function Parking_Incharge() {
           </Button>
         </DialogActions>
       </Dialog>
+      
+      <DocumentModal 
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        imageUrl={modalImage}
+        title={modalTitle}
+      />
 
       <Toaster position="top-right" reverseOrder={false} />
     </div>

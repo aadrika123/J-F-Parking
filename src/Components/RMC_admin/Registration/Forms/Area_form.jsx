@@ -6,6 +6,8 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import Cookies from "js-cookie";
 import createApiInstance from "../../../../AxiosInstance";
+import { validateFileUpload } from "../../../utils/fileValidation";
+import { customInputValidation } from "../../../utils/customInputValidation";
 
 const FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
@@ -185,11 +187,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={100}
-                    onKeyPress={(e) => {
-                      const regex = /^[a-zA-Z0-9 ]*$/;
-                      if (!regex.test(e.key)) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'alphanumeric'])
                     }}
                   />
                   <ErrorMessage
@@ -214,11 +213,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={30}
-                    onKeyPress={(e) => {
-                      const regex = /^[a-zA-Z0-9 ]*$/;
-                      if (!regex.test(e.key)) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'alphanumeric'])
                     }}
                   />
                   <ErrorMessage
@@ -233,7 +229,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="number"
+                    type="text"
                     id="two_wheeler_capacity"
                     name="two_wheeler_capacity"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -243,10 +239,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={10}
-                    onKeyPress={(e) => {
-                      if (!(e.key <= "0" || e.key <= "9")) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                   />
                   <ErrorMessage
@@ -261,7 +255,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="number"
+                    type="text"
                     id="total_parking_area"
                     name="total_parking_area"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -271,10 +265,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={10}
-                    onKeyPress={(e) => {
-                      if (!(e.key <= "0" || e.key <= "9")) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                   />
                   <ErrorMessage
@@ -360,10 +352,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={6}
-                    onKeyPress={(e) => {
-                      if (!(e.key <= "0" || e.key <= "9")) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                   />
                   <ErrorMessage
@@ -388,11 +378,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={100}
-                    onKeyPress={(e) => {
-                      const regex = /^[a-zA-Z0-9 ]*$/;
-                      if (!regex.test(e.key)) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'alphanumeric'])
                     }}
                   />
                   <ErrorMessage
@@ -407,7 +394,7 @@ export default function Area_form() {
                     <span className="text-red-500">*</span>
                   </label>
                   <Field
-                    type="number"
+                    type="text"
                     id="four_wheeler_capacity"
                     name="four_wheeler_capacity"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -417,10 +404,8 @@ export default function Area_form() {
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
                     maxLength={10}
-                    onKeyPress={(e) => {
-                      if (!(e.key <= "0" || e.key <= "9")) {
-                        e.preventDefault();
-                      }
+                    onInput={(e) => {
+                      customInputValidation(e, ['removeSpecialCharacter', 'number'])
                     }}
                   />
                   <ErrorMessage
@@ -438,7 +423,7 @@ export default function Area_form() {
                     </label>
 
                     <Field
-                      type="number"
+                      type="text"
                       id="two_wheeler_rate"
                       name="two_wheeler_rate"
                       className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -448,10 +433,8 @@ export default function Area_form() {
                       }
                       onBlur={(e) => (e.target.style.boxShadow = "none")}
                       maxLength={10}
-                      onKeyPress={(e) => {
-                        if (!(e.key <= "0" || e.key <= "9")) {
-                          e.preventDefault();
-                        }
+                      onInput={(e) => {
+                        customInputValidation(e, ['removeSpecialCharacter', 'number'])
                       }}
                     />
                     <ErrorMessage
@@ -467,7 +450,7 @@ export default function Area_form() {
                       <span className="text-red-500">*</span>
                     </label>
                     <Field
-                      type="number"
+                      type="text"
                       id="four_wheeler_rate"
                       name="four_wheeler_rate"
                       className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
@@ -477,10 +460,8 @@ export default function Area_form() {
                       }
                       onBlur={(e) => (e.target.style.boxShadow = "none")}
                       maxLength={10}
-                      onKeyPress={(e) => {
-                        if (!(e.key <= "0" || e.key <= "9")) {
-                          e.preventDefault();
-                        }
+                      onInput={(e) => {
+                        customInputValidation(e, ['removeSpecialCharacter', 'number'])
                       }}
                     />
                     <ErrorMessage
@@ -503,25 +484,29 @@ export default function Area_form() {
                     type="file"
                     id="agreement_doc_selected_file"
                     name="agreement_doc_selected_file"
-                    accept="image/*,.pdf"
+                    accept=".jpg,.jpeg,.png,.pdf"
                     className="border border-gray-300 px-3 py-4 rounded-md focus:outline-none ml-4 mr-4 transition duration-300"
                     style={{ boxShadow: "0 1px 4px #fff" }}
                     onFocus={(e) =>
                       (e.target.style.boxShadow = "0 1px 4px #000")
                     }
                     onBlur={(e) => (e.target.style.boxShadow = "none")}
-                    onChange={(event) => {
-                      setFieldValue(
-                        "agreement_doc_selected_file",
-                        event.target.files[0]
-                      );
-
-                      handle_Image_upload(
-                        event.target.files[0],
-                        "agreement_doc",
-                        setUploadedFiles,
-                        setUploading
-                      );
+                    onChange={async (event) => {
+                      const file = event.target.files[0];
+                      if (file) {
+                        const isValid = await validateFileUpload(file, {
+                          maxSize: 2 * 1024 * 1024,
+                          allowedTypes: ['image/*', '.pdf'],
+                          checkMalicious: true
+                        });
+                        
+                        if (isValid) {
+                          setFieldValue("agreement_doc_selected_file", file);
+                          handle_Image_upload(file, "agreement_doc", setUploadedFiles, setUploading);
+                        } else {
+                          event.target.value = '';
+                        }
+                      }
                     }}
                   />
                   <ErrorMessage
