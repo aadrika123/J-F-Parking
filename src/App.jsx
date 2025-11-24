@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import AppRoutes from "./Routes/AppRoutes";
 import img from "./assets/loader.json";
 import Lottie from "lottie-react";
+import Login_main from "./Components/Login/Login_main";
+import AuthGaurd from "./Routes/AuthGaurd";
 // import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -63,10 +65,17 @@ function App() {
 
   return (
     <>
-   
-       <AutoLogout>
-      <AppRoutes access_token={accessToken} userType={userType} />
-    </AutoLogout>
+
+      {!accessToken ? (
+        <Login_main />
+      ) : (
+        <AutoLogout>
+          <AuthGaurd>
+            <AppRoutes access_token={accessToken} userType={userType} />
+          </AuthGaurd>
+        </AutoLogout>
+      )}
+
       <Dialog
         open={open}
         onClose={handleClose}
