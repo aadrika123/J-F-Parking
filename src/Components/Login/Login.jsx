@@ -77,11 +77,11 @@ const Login = () => {
         systemUniqueId: fingerprint,
       });
 
-      fetchMenuList();
 
       const { token, userDetails } = res.data.data;
       Cookies.set("accesstoken", token, { expires: 1 });
-
+      localStorage.setItem("token", token);
+      await fetchMenuList();
       localStorage.setItem("ulbId", userDetails.ulb_id);
       localStorage.setItem("token", token);
       localStorage.setItem("userType", userDetails.user_type);
@@ -120,14 +120,20 @@ const Login = () => {
       );
       const data = res?.data;
 
-      localStorage.setItem("menuList", data?.data?.permission || "");
+      if (data?.data?.permission) {
+        localStorage.setItem("menuList", JSON.stringify(data.data.permission));
+        console.log("MenuList saved successfully");
+      } else {
+        console.warn("No permission data received");
+      }
 
       if (data?.data?.userDetails && data?.data?.permission) {
         localStorage.setItem("userDetail", JSON.stringify(data.data.userDetails));
         localStorage.setItem("userPermission", JSON.stringify(data.data.permission));
       }
     } catch (error) {
-      console.error("Error fetching menu list", error);
+      console.error("Error fetching menu list:", error);
+      throw error;
     }
   };
 
