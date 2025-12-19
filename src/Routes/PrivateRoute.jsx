@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import Header from "../Components/Header/Header";
 import Sidebar from "../Components/Dashboard/Sidebar";
 import { motion } from "framer-motion";
+import NewHeader from "../Components/Header/NewHeader";
 
 const PrivateRoute = ({ Element }) => {
   //const token = Cookies.get("accesstoken");
@@ -38,20 +39,25 @@ const PrivateRoute = ({ Element }) => {
       ) : (
         <div className="flex flex-1 flex-col h-[100vh]">
           <div className="flex  h-fit w-full">
-            <Header
+            {/* <Header
+              hide={hide}
+              set_hide={setHide}
+              heading={"Parking Management System"}
+            /> */}
+            <NewHeader
               hide={hide}
               set_hide={setHide}
               heading={"Parking Management System"}
             />
+
           </div>
 
           <div className="flex flex-1 flex-row overflow-hidden">
             <div className="flex  w-fit ">
               <div className="flex flex-1 ">
                 <motion.div
-                  className={`${
-                    hide ? "hidden" : "flex"
-                  }  transition-all duration-300 ease-in-out  w-full`}
+                  className={`${hide ? "hidden" : "flex"
+                    }  transition-all duration-300 ease-in-out  w-full`}
                   initial={{ x: -400 }} // Initial animation for hiding
                   animate={hide ? "hidden" : "visible"} // Animation based on hide state
                   variants={sidebarVariants} // Variants for animation
@@ -64,7 +70,7 @@ const PrivateRoute = ({ Element }) => {
               <Element />
             </div>
           </div>
-       
+
         </div>
       )}
     </>
