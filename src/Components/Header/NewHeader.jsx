@@ -3,6 +3,8 @@ import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slice/slice";
 import axios from "axios";
+import Modal from "react-modal";
+import PermittedModuleCard from "./PermittedModuleCard";
 
 const NewHeader = ({ heading, set_hide, hide }) => {
   const dispatch = useDispatch();
@@ -10,6 +12,8 @@ const NewHeader = ({ heading, set_hide, hide }) => {
   const [ulbData, setUlbData] = useState({});
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [modalIsOpen2, setIsOpen2] = useState(false);
+
   const userDropdownRef = useRef(null);
   const userData = JSON.parse(localStorage.getItem("userDetail"));
 
@@ -21,6 +25,10 @@ const NewHeader = ({ heading, set_hide, hide }) => {
     dispatch(logout());
     window.location.replace("/parking");
   }
+
+  const closeModal2 = () => {
+    setIsOpen2(false);
+  };
 
   const fetchUlbData = async () => {
     await axios
@@ -118,8 +126,19 @@ const NewHeader = ({ heading, set_hide, hide }) => {
           </div>
 
         </div>
+
+
         <div className="flex flex-row justify-start items-center md:ml-16 mt-2">
-          <h2 className="flex items-center gap-2 text-lg font-bold text-gray-800">
+          <button
+            onClick={() => setIsOpen2(true)}
+            className="ml-4 bg-[#1a4d8c] text-white px-4 py-1.5 rounded-lg text-sm flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z" />
+            </svg>
+            Modules
+          </button>
+          <h2 className=" ml-2 flex items-center gap-2 text-lg font-bold text-gray-800">
             <svg
               className="w-4 h-4 text-[#1a4d8c]"
               viewBox="0 0 24 24"
@@ -173,7 +192,7 @@ const NewHeader = ({ heading, set_hide, hide }) => {
                 {/* My Profile */}
                 <button
                   onClick={() =>
-                    window.location?.replace("/settings/dashboard/home")
+                     window.open("/settings/dashboard/home", "_blank")
                   }
                   className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-blue-50 transition-colors duration-150 text-left"
                 >
@@ -196,7 +215,7 @@ const NewHeader = ({ heading, set_hide, hide }) => {
 
                 {/* Change Password */}
                 <button
-                  onClick={() => window.location?.replace("/settings/dashboard/change-password")}
+                  onClick={() => window.open("/settings/dashboard/change-password", "_blank")}
                   className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-blue-50 transition-colors duration-150 text-left border-t border-gray-100"
                 >
                   <svg
@@ -219,9 +238,7 @@ const NewHeader = ({ heading, set_hide, hide }) => {
                 {/* Notifications */}
                 <button
                   onClick={() =>
-                    window.location?.replace(
-                      "/settings/dashboard/notification"
-                    )
+                    window.open("/settings/dashboard/notification", "_blank")
                   }
                   className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-blue-50 transition-colors duration-150 text-left border-t border-gray-100"
                 >
@@ -290,6 +307,20 @@ const NewHeader = ({ heading, set_hide, hide }) => {
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={modalIsOpen2}
+        onRequestClose={closeModal2}
+        className="z-20 h-screen w-screen backdrop-blur-sm flex items-center justify-center overflow-auto"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        contentLabel="Modules"
+      >
+        <PermittedModuleCard
+          isOpen={modalIsOpen2}
+          onClose={closeModal2}
+        />
+      </Modal>
+
     </div>
   );
 };
